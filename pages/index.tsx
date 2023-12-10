@@ -3,13 +3,18 @@
 import Image from "next/image";
 import Wrapper from "@/components/wrapper";
 import { Button } from "@/components/ui/button";
-
+import DashboardButton  from "@/components/ui/dashboardButton"
 import robot from "@/public/bot-image.png";
 
 //imports for supabase
 import { createClient } from "@supabase/supabase-js";
 import { error } from "console";
+import { supabase } from 'lib/initSupabase';
 
+const { data, error } = await supabase.from('posts').select('*')
+
+
+/**Migrated to lib/initSupabase.js 
 const supabasUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
@@ -17,7 +22,7 @@ if (!supabasUrl) throw new Error('Supabase URL not found');  //for debugging pru
 if (!supabaseAnonKey)  throw new Error('Supabase Anon key not found');  //for debugging purposes in case .env file doesn't recognize it
 
 export const supabase = createClient(supabasUrl, supabaseAnonKey); //accepts two parameters, the supabaseUrl and supabaseAnonKey
-
+*/
 export default function Home() {
 
 
@@ -37,9 +42,7 @@ export default function Home() {
             </p>
 
             <div className="">
-              <Button size="xl" className="w-full font-bold" variant="brand">
-                Get Started
-              </Button>
+              <DashboardButton/>
             </div>
           </div>
         </Wrapper>

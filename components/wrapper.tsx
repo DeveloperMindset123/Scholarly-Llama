@@ -41,9 +41,9 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
           href="/"
           className={`flex items-center text-2xl font-bold dark:text-white`}
         >
-          Scholarly.
+          Scholarly
           <span
-            className={`text-sm font-bold group ml-2 inline-block rounded-3xl bg-[#fafafa] px-3 text-black`}
+            className={`text-sm font-bold group ml-1 mt-1 inline-block rounded-3xl bg-[#fafafa] px-3 text-black`}
           >
             <span className="">Llama</span>
           </span>

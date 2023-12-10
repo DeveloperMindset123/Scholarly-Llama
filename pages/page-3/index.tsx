@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Wrapper from "@/components/wrapper";
 import { Button } from "@/components/ui/button";
-
+import DashboardButton  from "@/components/ui/dashboardButton"
 import boyAndGirl from "@/public/bot-image.png";
 
 export default function Home() {
@@ -22,9 +22,7 @@ export default function Home() {
             </p>
 
             <div className="">
-            <Button size="xl" className="w-full font-bold" variant="brand">
-                  Get Started
-              </Button>
+            <DashboardButton/>
             </div>
           </div>
         </Wrapper>
