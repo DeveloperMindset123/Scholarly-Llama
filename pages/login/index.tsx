@@ -8,7 +8,7 @@ export default function Login() {
     /**Logic: We want to perform one-time redirection from 'http://localhost:3000/' to 'http://localhost:3000/Login' only when the user initially visits the root URL, using the useEffect hook on the login component
      */
     const router = useRouter();
-    const handleSubmit = useCallback((e) => {
+    const handleSubmit = useCallback((e:any) => {
         e.preventDefault()
 
         fetch('/api/login', {
