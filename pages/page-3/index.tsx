@@ -4,7 +4,7 @@ import Image from "next/image";
 import Wrapper from "@/components/wrapper";
 import { Button } from "@/components/ui/button";
 import DashboardButton  from "@/components/ui/dashboardButton"
-import boyAndGirl from "@/public/bot-image.png";
+import boyAndGirl from "@/public/coolLlama.png";
 
 export default function Home() {
   return (

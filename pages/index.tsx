@@ -43,7 +43,7 @@ export default function Home() {
             </p>
 
             <div className="">
-              <DashboardButton/>
+              <DashboardButton />
             </div>
           </div>
         </Wrapper>

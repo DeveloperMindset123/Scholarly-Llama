@@ -1,9 +1,9 @@
 "use client";
 
-import {Button} from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./theme-toggle";
+import { Button } from "./ui/button";
 import Link from "next/link";
 
 const SECTION_DATA = [
@@ -12,7 +12,7 @@ const SECTION_DATA = [
   { label: 3, href: "/page-3", isFirst: false, isLast: true },
 ];
 
-export default function Wrapper({ children }: { children: React.ReactNode }) {
+export default function Wrapper({show, children }:any) {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [nextPage, setNextPage] = useState<undefined | string>("/");
   const [previousPage, setPreviousPage] = useState<undefined | string>("/");
@@ -53,33 +53,32 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
       </div>
       {children}
       <div className="flex w-full items-center justify-between">
-        <Link href={previousPage as string} passHref>
-          <Button
-            disabled
-            className="text-sm font-bold rounded-3xl bg-[#e0dede] text-black dark:bg-zinc-800 dark:text-zinc-400 px-7 py-2 opacity-50 hover:bg-[#d1d0d0] dark:hover:bg-zinc-900"
-          >
-            <span className="">Back</span>
-          </Button>
-        </Link>
-        <div className={`text-xs font-bold py-2  group-hover:bg-[#e1ffe1c5]`}>
-          <p className="text-xs">
-            <span className="inline-block dark:text-white">
-              {pathname === activeSection?.href ? activeSection.label : null}
-            </span>
-            <span className="inline-block px-3 opacity-50">/</span>
-            <span className="inline-block dark:text-white opacity-50">
-              {SECTION_DATA.length}
-            </span>
-          </p>
-        </div>
-
-        <Link href={nextPage as string} passHref>
-          <Button
-            className={`text-sm font-bold rounded-3xl bg-zinc-900 text-white dark:bg-white px-7 py-2 dark:text-black`}
-          >
-            <span className="">Next</span>
-          </Button>
-        </Link>
+      {!show && (
+         <><Link href={previousPage as string} passHref>
+                      <Button
+                          disabled
+                          className="text-sm font-bold rounded-3xl bg-[#e0dede] text-black dark:bg-zinc-800 dark:text-zinc-400 px-7 py-2 opacity-50 hover:bg-[#d1d0d0] dark:hover:bg-zinc-900"
+                      >
+                          <span className="">Back</span>
+                      </Button>
+                  </Link><div className={`text-xs font-bold py-2  group-hover:bg-[#e1ffe1c5]`}>
+                          <p className="text-xs">
+                              <span className="inline-block dark:text-white">
+                                  {pathname === activeSection?.href ? activeSection.label : null}
+                              </span>
+                              <span className="inline-block px-3 opacity-50">/</span>
+                              <span className="inline-block dark:text-white opacity-50">
+                                  {SECTION_DATA.length}
+                              </span>
+                          </p>
+                      </div><Link href={nextPage as string} passHref>
+                          <Button
+                              className={`text-sm font-bold rounded-3xl bg-zinc-900 text-white dark:bg-white px-7 py-2 dark:text-black`}
+                          >
+                              <span className="">Next</span>
+                          </Button>
+                      </Link></>
+       )}
       </div>
     </>
   );
