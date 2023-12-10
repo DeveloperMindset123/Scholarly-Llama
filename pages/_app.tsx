@@ -1,6 +1,7 @@
 import '@/styles/base.css';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
+import routes from 'next-routes';
 
 const inter = Inter({
   variable: '--font-inter',
