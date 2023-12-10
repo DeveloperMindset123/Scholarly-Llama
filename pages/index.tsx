@@ -8,10 +8,11 @@ import robot from "@/public/bot-image.png";
 
 //imports for supabase
 import { createClient } from "@supabase/supabase-js";
-import { error } from "console";
+
 import { supabase } from 'lib/initSupabase';
 
-const { data, error } = await supabase.from('posts').select('*')
+// const { data } = await supabase.from('posts').select('*')
+// Making infinite load
 
 
 /**Migrated to lib/initSupabase.js 

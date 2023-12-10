@@ -20,7 +20,7 @@ export default function ThemeToggle() {
       >
         <Icons.monitor classes="" />
       </Button>
-      <button
+      <Button
         className={`mr-2 p-1 dark:text-zinc-500 text-zinc-700 ${
           theme === "dark"
             ? "bg-white dark:bg-[#333] text-zinc-50 rounded-full shadow-xl"
@@ -29,7 +29,7 @@ export default function ThemeToggle() {
         onClick={() => setTheme("dark")}
       >
         <Icons.moon />
-      </button>
+      </Button>
       <Button
         className={`mr-2 p-1 dark:text-zinc-500 text-zinc-700 ${
           theme === "light"
