@@ -15,6 +15,9 @@
     "ingest": "tsx -r dotenv/config scripts/ingest-data.ts"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@pinecone-database/pinecone": "1.1.0",
     "@radix-ui/react-accordion": "^1.1.1",

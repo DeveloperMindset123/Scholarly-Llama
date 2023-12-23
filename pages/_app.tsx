@@ -13,6 +13,7 @@ const inter = Inter({
 });
 
   //Define the function to get user status based on token
+  /* --> commented it out for now as it is messing with the flow of login
   function getUserStatus(token: String | null) {
     return token ? 'user' : 'guest';
   }
@@ -21,14 +22,14 @@ const inter = Inter({
   function getRequiredStatus(pathname: string) {
     return pathname === '/dashboard' ? 'user' : 'guest';
   } //this will allow us to check for the pathname
-  
+  */
 
 export default function MyApp({ Component, pageProps }: AppProps) {
 
   //configuration for supabase
-  const router = useRouter();
-
+  //const router = useRouter(); not needed at the moment
   
+  /*
   async function checkAuth() {
     const token = localStorage.getItem('token');
     const userStatus = getUserStatus(token);
@@ -43,7 +44,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       }
     }
   }
-
+*/
   // useEffect (() => {
   //   (async()=>{
   //     checkAuth() 
@@ -51,6 +52,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   //    //call on the authentication function defined above
   // }, [checkAuth])
 
+  /*  --> we won't use this for now
   useEffect(() => {
     checkAuth();
     
@@ -59,7 +61,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     }
     router.events.on('routeChangeStart', handleRouteChange);
   }, [router.events, checkAuth]) 
-
+*/
   return (
     <>
       <Provider attribute="class" defaultTheme="system" enableSystem>

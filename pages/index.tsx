@@ -11,6 +11,8 @@ import { createClient } from "@supabase/supabase-js";
 
 import { supabase } from 'lib/initSupabase';
 import { redirect } from "next/dist/server/api-utils";
+import SignInWithGoogle from "./connections/signIn";
+import { signOutWithGoogle } from "./connections/signout";
 
 // const { data } = await supabase.from('posts').select('*')
 // Making infinite load
@@ -27,6 +29,7 @@ export const supabase = createClient(supabasUrl, supabaseAnonKey); //accepts two
 */
 //we want the homepage to be preotected
 
+//this is the homepage where we are rediretected to
 export default function Home() {
 
   return (
@@ -59,3 +62,6 @@ export default function Home() {
     </section>
   );
 }
+
+//the following code is intended to protect the dashboard page
+export const config = { matcher: ['/dashboard']};
