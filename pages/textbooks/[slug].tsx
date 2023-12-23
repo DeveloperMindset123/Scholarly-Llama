@@ -6,15 +6,21 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
-
+import {PINECONE_NAME_SPACE} from 'config/pinecone'
+import { createClient } from '@supabase/supabase-js';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import Wrapper from '@/components/wrapper';
+
 
 export default function Page() {
+  const [pdf, setPdf] = useState<any>(null);
+  const [ready,setReady] = useState<any>(false);
+  const [text, setText] = useState<string>('Hi, upload your textbook!');
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +33,7 @@ export default function Page() {
   }>({
     messages: [
       {
-        message: 'Hi, what would you like to learn about this document?',  //adjust this as needed
+        message: text,  //adjust this as needed
         type: 'apiMessage',
       },
     ],
@@ -39,7 +45,97 @@ export default function Page() {
   const messageListRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setPdf(selectedFile);
+    }
+  };
+
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
+    setError(null);
+  
+    if (!query && !pdf) {
+      // setMessageState((state) => ({
+      //   ...state,
+      //   messages: [
+      //     ...state.messages,
+      //     {
+      //       type: 'apiMessage',
+      //       message: "Please input a question or upload a file.",
+      //     },
+      //   ],
+      //   history: [],
+      // }))
+      return;
+    }
+  
+    // If a file is selected, use it in the processing logic
+    if (pdf) {
+      try {
+        // setMessageState((state) => ({
+        //   ...state,
+        //   messages: [
+        //     ...state.messages,
+        //     {
+        //       type: 'apiMessage',
+        //       message: "Thank you! What questions do you have?",
+        //     },
+        //   ],
+        //   history: [],
+        // }))
+
+        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "");
+        
+        console.log(PINECONE_NAME_SPACE)
+        // Upload PDF to Supabase bucket
+        const { data, error } = await supabase.storage
+          .from('pdfs')
+          .upload(`public/${PINECONE_NAME_SPACE}.pdf`, pdf, {
+            contentType: 'application/pdf',
+          });
+        
+        if (error) {
+          console.error('Error uploading PDF to Supabase:', error);
+          return;
+        }
+        console.log('bye')
+        const ingestResponse = await fetch('/api/ingestpines',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            PINECONE_NAME_SPACE
+          }),
+        });
+
+        console.log('bye')
+        const ingestData = await ingestResponse.json();
+
+        console.log('bye')
+        if (ingestData.success) {
+          setReady(true);
+          console.log('PDF uploaded and ingested successfully');
+        } else {
+          console.error('Ingestion failed:', ingestData.error);
+        }
+        
+      } catch (error) {
+        setError('An error occurred while processing the file.');
+        console.log('File Processing Error:', error);
+      }
+    }
+  
+    // ... (rest of the existing code for handling text input)
+  };
+
   //modification added here for page routing/redirect
+
+  
 
   useEffect(() => {
     textAreaRef.current?.focus();
@@ -81,6 +177,7 @@ export default function Page() {
         body: JSON.stringify({
           question,
           history,
+          PINECONE_NAME_SPACE
         }),
       });
       const data = await response.json();
@@ -126,10 +223,12 @@ export default function Page() {
 
   return (
     <>
-      
+        <section className="flex flex-col lg:flex-row">
+        <section className="flex h-screen w-full flex-col justify-between p-9 lg:h-auto">
+      <Wrapper show={true}>
         <div className="mx-auto flex flex-col gap-4">
           <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
-            Chat With Your Docs, slug: {router.query.slug}
+            Chat With Your Docs
           </h1>
           <main className={styles.main}>
             <div className={styles.cloud}>
@@ -215,6 +314,16 @@ export default function Page() {
             </div>
             <div className={styles.center}>
               <div className={styles.cloudform}>
+              {!ready && (
+                <>
+                <input onChange={handleFileUpload} type="file" id="fileInput" />
+                <button className='bg-white text-black p-3 rounded-sm' onClick={(e: any) => {
+                handleFormSubmit(e);
+                
+                // setReady(true);
+                }}>Upload File</button></>
+              )}
+              {ready && (
                 <form onSubmit={handleSubmit}>
                   <textarea
                     disabled={loading}
@@ -255,6 +364,7 @@ export default function Page() {
                     )}
                   </button>
                 </form>
+                )}
               </div>
             </div>
             {error && (
@@ -264,6 +374,9 @@ export default function Page() {
             )}
           </main>
         </div>
+        </Wrapper>
+        </section>
+        </section>
     </>
   );
 }
