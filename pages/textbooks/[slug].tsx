@@ -6,15 +6,21 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
-
+import {PINECONE_NAME_SPACE} from 'config/pinecone'
+import { createClient } from '@supabase/supabase-js';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import Wrapper from '@/components/wrapper';
+
 
 export default function Page() {
+  const [pdf, setPdf] = useState<any>(null);
+  const [ready,setReady] = useState<any>(false);
+  const [text, setText] = useState<string>('Hi, upload your textbook!');
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +33,7 @@ export default function Page() {
   }>({
     messages: [
       {
-        message: 'Hi, what would you like to learn about this document?',  //adjust this as needed
+        message: text,  //adjust this as needed
         type: 'apiMessage',
       },
     ],
@@ -39,7 +45,120 @@ export default function Page() {
   const messageListRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  //modification added here for page routing/redirect
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setPdf(selectedFile);
+    }
+  };
+
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  
+    setError(null);
+  
+    if (!query && !pdf) {
+      // setMessageState((state) => ({
+      //   ...state,
+      //   messages: [
+      //     ...state.messages,
+      //     {
+      //       type: 'apiMessage',
+      //       message: "Please input a question or upload a file.",
+      //     },
+      //   ],
+      //   history: [],
+      // }))
+      return;
+    }
+  
+    // If a file is selected, use it in the processing logic
+    if (pdf) {
+      try {
+        setReady(true);
+        setLoading(true);
+        // setMessageState((state) => ({
+        //   ...state,
+        //   messages: [
+        //     ...state.messages,
+        //     {
+        //       type: 'apiMessage',
+        //       message: "Thank you! What questions do you have?",
+        //     },
+        //   ],
+        //   history: [],
+        // }))
+
+        setMessageState((state) => ({
+          ...state,
+          messages: [
+            ...state.messages,
+            {
+              type: 'apiMessage',
+              message: "Thank you! Let me process this.",
+            },
+          ],
+          history: [...state.history],
+        }));
+      
+
+        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "");
+        
+
+        // Upload PDF to Supabase bucket
+        const { data, error } = await supabase.storage
+          .from('pdfs')
+          .upload(`public/${PINECONE_NAME_SPACE}.pdf`, pdf, {
+            contentType: 'application/pdf',
+          });
+        
+        if (error) {
+          console.error('Error uploading PDF to Supabase:', error);
+          return;
+        }
+
+        const ingestResponse = await fetch('/api/ingestpines',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            PINECONE_NAME_SPACE
+          }),
+        });
+
+        const ingestData = await ingestResponse.json();
+
+        if (ingestData.success) {
+          setReady(true);
+          console.log('PDF uploaded and ingested successfully');
+        } else {
+          console.error('Ingestion failed:', ingestData.error);
+        }
+
+        setLoading(false);
+        setMessageState((state) => ({
+          ...state,
+          messages: [
+            ...state.messages,
+            {
+              type: 'apiMessage',
+              message: "What questions do you have?",
+            },
+          ],
+          history: [...state.history],
+        }));
+        
+      } catch (error) {
+        setError('An error occurred while processing the file.');
+        console.log('File Processing Error:', error);
+      }
+    }
+  
+  };
+
+  
 
   useEffect(() => {
     textAreaRef.current?.focus();
@@ -81,10 +200,11 @@ export default function Page() {
         body: JSON.stringify({
           question,
           history,
+          PINECONE_NAME_SPACE
         }),
       });
       const data = await response.json();
-      console.log('data', data);
+
 
       if (data.error) {
         setError(data.error);
@@ -102,7 +222,7 @@ export default function Page() {
           history: [...state.history, [question, data.text]],
         }));
       }
-      console.log('messageState', messageState);
+
 
       setLoading(false);
 
@@ -126,10 +246,12 @@ export default function Page() {
 
   return (
     <>
-      
+        <section className="flex flex-col lg:flex-row">
+        <section className="flex h-screen w-full flex-col justify-between p-9 lg:h-auto">
+      <Wrapper show={true}>
         <div className="mx-auto flex flex-col gap-4">
           <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
-            Chat With Your Docs, slug: {router.query.slug}
+            Chat With Your Textbooks
           </h1>
           <main className={styles.main}>
             <div className={styles.cloud}>
@@ -178,7 +300,7 @@ export default function Page() {
                           </ReactMarkdown>
                         </div>
                       </div>
-                      {message.sourceDocs && (
+                      {/* {message.sourceDocs && (
                         <div
                           className="p-5"
                           key={`sourceDocsAccordion-${index}`}
@@ -207,7 +329,7 @@ export default function Page() {
                             ))}
                           </Accordion>
                         </div>
-                      )}
+                      )} */}
                     </>
                   );
                 })}
@@ -215,6 +337,50 @@ export default function Page() {
             </div>
             <div className={styles.center}>
               <div className={styles.cloudform}>
+              {!ready && (
+                <>
+                 <form onSubmit={handleFormSubmit}>
+                  <textarea
+                    disabled={true}
+                    onKeyDown={handleEnter}
+                    ref={textAreaRef}
+                    autoFocus={false}
+                    rows={1}
+                    maxLength={512}
+                    id="userInput"
+                    name="userInput"
+                    value={query}
+                    placeholder={!pdf ? 'No file is selected' : pdf.name}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className={`relative resize-none text-lg pl-16 p-4 w-[75vw] rounded-md bg-white text-black outline-none border`}
+                  />
+                  <button
+                    type="submit"
+                    className={styles.generatebutton}
+                  >
+                      <svg
+                        className={`${styles.svgicon}  `}
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+                      </svg>
+                  </button>
+                </form>
+                <div className={`${styles.wrapper} absolute -mt-[3.8rem] ml-2 `}>
+                  <div className={styles.fileUpload}>
+                    <input type="file" accept='.pdf' id="fileInput" onChange={handleFileUpload} />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+  <polyline points="17 8 12 3 7 8"></polyline>
+  <line x1="12" y1="3" x2="12" y2="15"></line>
+</svg>
+
+                  </div>
+                </div>
+                </>
+              )}
+              {ready && (
                 <form onSubmit={handleSubmit}>
                   <textarea
                     disabled={loading}
@@ -255,6 +421,7 @@ export default function Page() {
                     )}
                   </button>
                 </form>
+                )}
               </div>
             </div>
             {error && (
@@ -264,6 +431,9 @@ export default function Page() {
             )}
           </main>
         </div>
+        </Wrapper>
+        </section>
+        </section>
     </>
   );
 }
