@@ -102,7 +102,7 @@ export default function Page() {
           console.error('Error uploading PDF to Supabase:', error);
           return;
         }
-        console.log('bye')
+        console.log(PINECONE_NAME_SPACE)
         const ingestResponse = await fetch('/api/ingestpines',{
           method: 'POST',
           headers: {

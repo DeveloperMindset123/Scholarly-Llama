@@ -5,10 +5,10 @@
 // if (!process.env.PINECONE_INDEX_NAME) {
 //   throw new Error('Missing Pinecone index name in .env file');
 // }
-const { v4: uuidv4 } = require('uuid');
+import {v4} from 'uuid';
 
 
-const myUUID = uuidv4();
+const myUUID = v4();
 
 const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME || 'scholarlyllama';
 
