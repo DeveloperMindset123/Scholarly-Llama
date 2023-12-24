@@ -10,6 +10,7 @@ import robot from "@/public/bot-image.png";
 import { createClient } from "@supabase/supabase-js";
 
 import { supabase } from 'lib/initSupabase';
+import { redirect } from "next/dist/server/api-utils";
 
 // const { data } = await supabase.from('posts').select('*')
 // Making infinite load
@@ -24,8 +25,9 @@ if (!supabaseAnonKey)  throw new Error('Supabase Anon key not found');  //for de
 
 export const supabase = createClient(supabasUrl, supabaseAnonKey); //accepts two parameters, the supabaseUrl and supabaseAnonKey
 */
-export default function Home() {
+//we want the homepage to be preotected
 
+export default function Home() {
 
   return (
     <section className="flex flex-col lg:flex-row">
