@@ -6,6 +6,7 @@ import ThemeToggle from "./theme-toggle";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import SignoutButton from "./ui/signoutButton";
 
 const SECTION_DATA = [
   { label: 1, href: "/", isFirst: true, isLast: false },
@@ -53,8 +54,12 @@ export default function Wrapper({show, children }:any) {
           </span>
         </Link>
 
-        <ThemeToggle />
+          <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <SignoutButton />
+          </div>
       </div>
+     
       {children}
       <div className="flex w-full items-center justify-between">
       {!show && (

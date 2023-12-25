@@ -1,6 +1,6 @@
 'use client'
 import Wrapper from '@/components/wrapper';
-import DashboardButton2 from '@/components/ui/dashboardButton2';  //this button will be used to handle signout functionality
+import DashboardButton2 from '@/components/ui/signoutButton';  //this button will be used to handle signout functionality
 
 import { useEffect } from 'react';
 import { supabase } from '@/lib/initSupabase';
@@ -18,12 +18,12 @@ function Box({text}:any){
 
 export default function Dashboard( ) {
     const{user } = useAuth();
+    const name = user.user_metadata.full_name
     return (
         <section className="flex flex-col lg:flex-row">
         <section className="flex h-screen w-full flex-col justify-between p-9 lg:h-auto">
              <Wrapper show={true}>
                 <div className='flex flex-row flex-wrap px-16 mt-[7rem] gap-14 '>
-                    {/* <p></p> */}
                     <Box text={"+ Add PDF"}/>
                     <Box/>
                     <Box/>
@@ -36,9 +36,6 @@ export default function Dashboard( ) {
                     <Box/>
                     <Box/>
                     <Box/>
-                </div>
-                <div>
-                <DashboardButton2 />
                 </div>
             </Wrapper >
         </section>

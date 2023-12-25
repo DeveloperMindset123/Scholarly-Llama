@@ -9,7 +9,7 @@ export default function ProtectedRoute({children}:any){
             <p>Loading...</p>
         )
     }else{
-        if (!isAuthenticated && router.pathname == '/dashboard') {
+        if (!isAuthenticated && (router.pathname.includes('/dashboard'))) {
             router.push('/404');
         }else{
             return children
