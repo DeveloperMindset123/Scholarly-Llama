@@ -51,14 +51,14 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   //    //call on the authentication function defined above
   // }, [checkAuth])
 
-  useEffect(() => {
-    checkAuth();
+  // useEffect(() => {
+  //   checkAuth();
     
-    const handleRouteChange = async () => {
-      await checkAuth()
-    }
-    router.events.on('routeChangeStart', handleRouteChange);
-  }, [router.events, checkAuth]) 
+  //   const handleRouteChange = async () => {
+  //     await checkAuth()
+  //   }
+  //   router.events.on('routeChangeStart', handleRouteChange);
+  // }, [router.events, checkAuth]) 
 
   return (
     <>
