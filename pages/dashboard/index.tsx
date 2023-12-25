@@ -5,6 +5,7 @@ import DashboardButton2 from '@/components/ui/dashboardButton2';  //this button 
 import { useEffect } from 'react';
 import { supabase } from '@/lib/initSupabase';
 import { useRouter } from 'next/router';
+import { useAuth } from '@/components/authProvider';
 
 function Box(){
     return (
@@ -35,6 +36,7 @@ export async function getServerSideProps() {
 }*/
 
 export default  function Dashboard( {} ) {
+  const { isAuthenticated, user } = useAuth();
   // console.log(data)
   // useEffect(() => {
   //   (async()=>{
