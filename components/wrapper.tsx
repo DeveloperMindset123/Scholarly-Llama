@@ -41,11 +41,11 @@ export default function Wrapper({show, children }:any) {
           href="/"
           className={`flex items-center text-2xl font-bold dark:text-white`}
         >
-          Scholarly
+          {/* Scholarly */}
           <span
-            className={`text-sm font-bold group ml-1 mt-1 inline-block rounded-3xl bg-[#fafafa] px-3 text-black`}
+            className={`text-sm font-bold group ml-1 mt-2 inline-block rounded-3xl bg-[#fafafa] px-6 text-black`}
           >
-            <span className="">Llama</span>
+            <span className="">.LLAMA</span>
           </span>
         </Link>
 

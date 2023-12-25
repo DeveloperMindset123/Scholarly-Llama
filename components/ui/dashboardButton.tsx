@@ -17,7 +17,8 @@ export default function DashboardButton(){
   
 
     return(
-        <Link href={`/textbooks/${PINECONE_NAME_SPACE}`}>
+        // <Link href={`/textbooks/${PINECONE_NAME_SPACE}`}>
+        <Link href={`/dashboard`}>
             <Button size="xl" className="w-full font-bold" variant="brand" 
             // onClick={() => {
             //     toastNotification({title: 'Redirecting...'})
