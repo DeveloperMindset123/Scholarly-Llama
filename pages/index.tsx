@@ -64,4 +64,4 @@ export default function Home() {
 }
 
 //the following code is intended to protect the dashboard page
-export const config = { matcher: ['/dashboard']};
+//export const config = { matcher: ['/dashboard']};

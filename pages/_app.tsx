@@ -6,11 +6,14 @@ import routes from 'next-routes';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { Provider } from "@/components/provider";
-
+import { supabase } from "@/lib/initSupabase";
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
 });
+
+//code added from tutorial
+
 
   //Define the function to get user status based on token
   /* --> commented it out for now as it is messing with the flow of login
@@ -68,6 +71,23 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   //   router.events.on('routeChangeStart', handleRouteChange);
   // }, [router.events, checkAuth]) 
 
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log('_APP.TSX event:',event)
+    console.log('_APP.TSX session:',session)
+    if (session && session.provider_token) {
+      window.localStorage.setItem('oauth_provider_token', session.provider_token)
+    }
+  
+    if (session && session.provider_refresh_token) {
+      window.localStorage.setItem('oauth_provider_refresh_token', session.provider_refresh_token)
+    }
+  
+    if (event === 'SIGNED_OUT') {
+      window.localStorage.removeItem('oauth_provider_token')
+      window.localStorage.removeItem('oauth_provider_refresh_token')
+    }
+  })
+  
   return (
     <>
       <Provider attribute="class" defaultTheme="system" enableSystem>

@@ -15,13 +15,15 @@
     "ingest": "tsx -r dotenv/config scripts/ingest-data.ts"
   },
   "dependencies": {
+    "@esbuild/darwin-arm64": "^0.19.10",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@esbuild/darwin-arm64": "^0.19.10",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@pinecone-database/pinecone": "1.1.0",
     "@radix-ui/react-accordion": "^1.1.1",
+    "@supabase/auth-helpers-nextjs": "^0.8.7",
+    "@supabase/auth-js": "^2.62.0",
     "@supabase/supabase-js": "^2.39.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",

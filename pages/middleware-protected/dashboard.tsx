@@ -1,3 +1,4 @@
+'use client'
 import Wrapper from '@/components/wrapper';
 import DashboardButton2 from '@/components/ui/dashboardButton2';  //this button will be used to handle signout functionality
 
@@ -33,11 +34,20 @@ export async function getServerSideProps() {
   return { props: { user }};
 }*/
 
-export default function Dashboard( {} ) {
-
+export default  function Dashboard( {} ) {
+  // console.log(data)
+  // useEffect(() => {
+  //   (async()=>{
+  //     const { data, error }:any = await supabase.auth.getSession()
+  //     console.log(data.session.user)
+  //     console.log(window.localStorage.getItem('oauth_provider_token'))
+  //   })()
+  // })
+  
   //below is the functionality for the protected routes
-  const router = useRouter();
+  //const router = useRouter();
 
+  /*
   useEffect(() => {
     //check if the user is authenticated
     const user = supabase.auth.getUser();  //use this function to get user
@@ -52,7 +62,7 @@ export default function Dashboard( {} ) {
       router.push('/dashboard');
     }
 
-  }, []);
+  }, []); */
     return (
         <section className="flex flex-col lg:flex-row">
         <section className="flex h-screen w-full flex-col justify-between p-9 lg:h-auto">
