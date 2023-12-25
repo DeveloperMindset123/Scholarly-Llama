@@ -14,8 +14,8 @@ const CONDENSE_TEMPLATE = `Given the following conversation and a follow up ques
 Follow Up Input: {question}
 Standalone question:`;
 
-const QA_TEMPLATE = `You are a AI with immense knowledge on the books context. Use the following pieces of context from the book to answer the question at the end. 
-
+const QA_TEMPLATE = `You are a AI with immense knowledge on the given context which is a book. Use the following pieces of context from the book to try to answer the question at the end. 
+If specific context or chat history is not provided or if you are unsure, try to infer based on the general context. 
 
 <context>
   {context}
@@ -26,7 +26,7 @@ const QA_TEMPLATE = `You are a AI with immense knowledge on the books context. U
 </chat_history>
 
 Question: {question}
-Helpful answer in markdown:`;
+Helpful answer in markdown, and readable format:`;
 
 // 
 // If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context.

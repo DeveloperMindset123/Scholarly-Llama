@@ -78,19 +78,19 @@ export default function Page() {
       try {
         setReady(true);
         setLoading(true);
-        // setMessageState((state) => ({
-        //   ...state,
-        //   messages: [
-        //     ...state.messages,
-        //     {
-        //       type: 'apiMessage',
-        //       message: "Thank you! What questions do you have?",
-        //     },
-        //   ],
-        //   history: [],
-        // }))
 
         setMessageState((state) => ({
+          ...state,
+          messages: [
+            ...state.messages,
+            {
+              type: 'userMessage',
+              message: pdf.name,
+            },
+          ],
+        }));
+
+        setTimeout(() => {       setMessageState((state) => ({
           ...state,
           messages: [
             ...state.messages,
@@ -100,7 +100,9 @@ export default function Page() {
             },
           ],
           history: [...state.history],
-        }));
+        }));},2000)
+
+ 
       
 
         const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "");
@@ -137,18 +139,108 @@ export default function Page() {
           console.error('Ingestion failed:', ingestData.error);
         }
 
-        setLoading(false);
         setMessageState((state) => ({
           ...state,
           messages: [
             ...state.messages,
             {
-              type: 'apiMessage',
-              message: "What questions do you have?",
+              type: 'userMessage',
+              message: "About the book, What should I know of the context?",
             },
           ],
-          history: [...state.history],
         }));
+    
+        // setTimeout(async()=>{
+           try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              question:"About the book, What should I know of the context?",
+              history,
+              PINECONE_NAME_SPACE
+            }),
+          });
+          const data = await response.json();
+    
+          console.log(data.text)
+    
+          if (data.error) {
+            setError(data.error);
+          } else {
+            setMessageState((state) => ({
+              ...state,
+              messages: [
+                ...state.messages,
+                {
+                  type: 'apiMessage',
+                  message: data.text,
+                  sourceDocs: data.sourceDocuments,
+                },
+              ],
+              history: [...state.history, ["About the book, What should I know of the context?", data.text]],
+            }));
+          }
+          messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+          setLoading(false);
+             //scroll to bottom
+            
+            } catch (error) {
+              setLoading(false);
+              setError('An error occurred while fetching the data. Please try again.');
+              console.log('error', error);
+            }
+        // },10000)
+               
+        
+        // setQuery('');
+    
+        // try {
+        //   const response = await fetch('/api/chat', {
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //       question:"What should I know of this context?",
+        //       history,
+        //       PINECONE_NAME_SPACE
+        //     }),
+        //   });
+        //   const data = await response.json();
+    
+        //   console.log(data.text)
+    
+        //   if (data.error) {
+        //     setError(data.error);
+        //   } else {
+        //     setMessageState((state) => ({
+        //       ...state,
+        //       messages: [
+        //         ...state.messages,
+        //         {
+        //           type: 'apiMessage',
+        //           message: data.text,
+        //           sourceDocs: data.sourceDocuments,
+        //         },
+        //       ],
+        //       history: [...state.history, ["What should I know of this context?", data.text]],
+        //     }));
+        //   }
+    
+    
+        //   setLoading(false);
+    
+        //   //scroll to bottom
+        //   messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+        // } catch (error) {
+        //   setLoading(false);
+        //   setError('An error occurred while fetching the data. Please try again.');
+        //   console.log('error', error);
+        // }
+        
         
       } catch (error) {
         setError('An error occurred while processing the file.');
@@ -187,7 +279,7 @@ export default function Page() {
         },
       ],
     }));
-
+    messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
     setLoading(true);
     setQuery('');
 
@@ -205,6 +297,7 @@ export default function Page() {
       });
       const data = await response.json();
 
+      console.log(data.text)
 
       if (data.error) {
         setError(data.error);
@@ -223,11 +316,10 @@ export default function Page() {
         }));
       }
 
-
+      messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
       setLoading(false);
 
       //scroll to bottom
-      messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
     } catch (error) {
       setLoading(false);
       setError('An error occurred while fetching the data. Please try again.');
@@ -292,7 +384,7 @@ export default function Page() {
                   }
                   return (
                     <>
-                      <div key={`chatMessage-${index}`} className={className}>
+                      <div ref={messageListRef} key={`chatMessage-${index}`} className={className}>
                         {icon}
                         <div className={styles.markdownanswer}>
                           <ReactMarkdown linkTarget="_blank">
