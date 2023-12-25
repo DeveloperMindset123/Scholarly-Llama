@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import styles from '@/styles/Home.module.css';
 import { Message } from '@/types/chat';
 import Image from 'next/image';
@@ -183,7 +183,7 @@ export default function Page() {
               history: [...state.history, ["About the book, What should I know of the context?", data.text]],
             }));
           }
-          messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+  
           setLoading(false);
              //scroll to bottom
             
@@ -234,7 +234,6 @@ export default function Page() {
         //   setLoading(false);
     
         //   //scroll to bottom
-        //   messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
         // } catch (error) {
         //   setLoading(false);
         //   setError('An error occurred while fetching the data. Please try again.');
@@ -250,11 +249,21 @@ export default function Page() {
   
   };
 
-  
-
   useEffect(() => {
     textAreaRef.current?.focus();
   }, []);
+
+  useLayoutEffect(() => {
+    const scrollToBottom = () => {
+      if (messageListRef.current) {
+        messageListRef.current.scrollTo({
+          top: messageListRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    };
+    scrollToBottom();
+  }, [messages]);
 
   //handle form submission
   async function handleSubmit(e: any) {
@@ -279,7 +288,7 @@ export default function Page() {
         },
       ],
     }));
-    messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+
     setLoading(true);
     setQuery('');
 
@@ -297,7 +306,7 @@ export default function Page() {
       });
       const data = await response.json();
 
-      console.log(data.text)
+  
 
       if (data.error) {
         setError(data.error);
@@ -316,7 +325,7 @@ export default function Page() {
         }));
       }
 
-      messageListRef.current?.scrollTo(0, messageListRef.current.scrollHeight);
+
       setLoading(false);
 
       //scroll to bottom
@@ -384,7 +393,7 @@ export default function Page() {
                   }
                   return (
                     <>
-                      <div ref={messageListRef} key={`chatMessage-${index}`} className={className}>
+                      <div key={`chatMessage-${index}`} className={className}>
                         {icon}
                         <div className={styles.markdownanswer}>
                           <ReactMarkdown linkTarget="_blank">
