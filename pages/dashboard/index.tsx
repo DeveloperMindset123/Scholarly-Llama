@@ -1,14 +1,23 @@
+'use client'
 import Wrapper from '@/components/wrapper';
+import DashboardButton2 from '@/components/ui/dashboardButton2';  //this button will be used to handle signout functionality
+
+import { useEffect } from 'react';
+import { supabase } from '@/lib/initSupabase';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/components/authProvider';
 
 function Box(){
     return (
         <div className='bg-white h-40 w-40 rounded-md'>
-            
+            <p >Just an empty box!</p>
         </div>
     )
 }
 
+/*  --> for now, the backend related issues can be handled by Garv, the main priority is for the sign in and signout functionalities to work as intended
 const basePath = 'http://locahost:3000';
+
 export async function getServerSideProps() {
   const response = await fetch(`${basePath}/api/getUser`).then((response) => response.json());  //we have not yet defined this route
 
@@ -24,9 +33,38 @@ export async function getServerSideProps() {
   }
   //we will pass the returned user to the page's react component as a prop
   return { props: { user }};
-}
+}*/
 
-export default function Dashboard( {user } ) {
+export default  function Dashboard( {} ) {
+  const { isAuthenticated, user } = useAuth();
+  // console.log(data)
+  // useEffect(() => {
+  //   (async()=>{
+  //     const { data, error }:any = await supabase.auth.getSession()
+  //     console.log(data.session.user)
+  //     console.log(window.localStorage.getItem('oauth_provider_token'))
+  //   })()
+  // })
+  
+  //below is the functionality for the protected routes
+  //const router = useRouter();
+
+  /*
+  useEffect(() => {
+    //check if the user is authenticated
+    const user = supabase.auth.getUser();  //use this function to get user
+
+    //check if user exists or not
+    if (!user) {
+      //if user is not authenticated, redirect to the login page
+      router.push('/404');
+    }
+    else {
+      //if the user does exist
+      router.push('/dashboard');
+    }
+
+  }, []); */
     return (
         <section className="flex flex-col lg:flex-row">
         <section className="flex h-screen w-full flex-col justify-between p-9 lg:h-auto">
@@ -34,6 +72,9 @@ export default function Dashboard( {user } ) {
                 <div className='flex flex-row mt-20'>
                     <p></p>
                     <Box/>
+                </div>
+                <div>
+                <DashboardButton2 />
                 </div>
             </Wrapper >
         </section>

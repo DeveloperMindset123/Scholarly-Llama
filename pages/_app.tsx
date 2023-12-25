@@ -1,74 +1,49 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import '@/styles/base.css';
-import type { AppProps } from 'next/app';
+import { useAuth } from '@/components/authProvider';
 import { Inter } from 'next/font/google';
 import routes from 'next-routes';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { Provider } from "@/components/provider";
-
+import { supabase } from "@/lib/initSupabase";
+import { AuthProvider } from '@/components/authProvider';
+import { handleAuthChange, AuthTokens, checkTokens } from './connections/authUtils';  //import the two things we will be using 
+import { type AppProps } from 'next/app'
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs'
+import { SessionContextProvider, Session } from '@supabase/auth-helpers-react';
+import ProtectedRoute from "@/components/protectedRoute"
+import { useState } from 'react'
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
 });
 
-  //Define the function to get user status based on token
-  function getUserStatus(token: String | null) {
-    return token ? 'user' : 'guest';
-  }
 
-  //define the function to get the required status based on the pathname
-  function getRequiredStatus(pathname: string) {
-    return pathname === '/dashboard' ? 'user' : 'guest';
-  } //this will allow us to check for the pathname
-  
+ export default function MyApp({
+  Component,
+  pageProps,
+}: AppProps<{
+  initialSession: Session
+}>) { 
 
-export default function MyApp({ Component, pageProps }: AppProps) {
-
-  //configuration for supabase
-  const router = useRouter();
-
-  
-  async function checkAuth() {
-    const token = localStorage.getItem('token');
-    const userStatus = getUserStatus(token);
-    const requiredStatus = getRequiredStatus(router.pathname);
-
-    // Handle logic for protected pages
-    if (userStatus !== requiredStatus) {
-      if (userStatus === 'guest') {
-        router.replace('/'); // Redirect guests to login page
-      } else {
-        router.replace('/dashboard'); // Redirect users to dashboard
-      }
-    }
-  }
-
-  // useEffect (() => {
-  //   (async()=>{
-  //     checkAuth() 
-  //   })()
-  //    //call on the authentication function defined above
-  // }, [checkAuth])
-
-  // useEffect(() => {
-  //   checkAuth();
-    
-  //   const handleRouteChange = async () => {
-  //     await checkAuth()
-  //   }
-  //   router.events.on('routeChangeStart', handleRouteChange);
-  // }, [router.events, checkAuth]) 
 
   return (
     <>
       <Provider attribute="class" defaultTheme="system" enableSystem>
+     
       <main className={inter.variable}>
-        <Component {...pageProps} />
+      <AuthProvider>
+        <ProtectedRoute>
+          <Component {...pageProps} />
+        </ProtectedRoute>
+        </AuthProvider>
       </main>
+      
       </Provider>
     </>
   );
 }
+
 
 
