@@ -13,6 +13,9 @@ export default function DashboardButton(){
     // Use the toast function from the library to display the notification
         (title);
   }
+
+  
+
     return(
         
             <Button size="xl" className="w-full font-bold" variant="brand" onClick={() => {

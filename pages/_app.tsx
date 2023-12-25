@@ -62,6 +62,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     router.events.on('routeChangeStart', handleRouteChange);
   }, [router.events, checkAuth]) 
 */
+  //   const handleRouteChange = async () => {
+  //     await checkAuth()
+  //   }
+  //   router.events.on('routeChangeStart', handleRouteChange);
+  // }, [router.events, checkAuth]) 
+
   return (
     <>
       <Provider attribute="class" defaultTheme="system" enableSystem>
