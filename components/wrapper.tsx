@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import ThemeToggle from "./theme-toggle";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
 const SECTION_DATA = [
   { label: 1, href: "/", isFirst: true, isLast: false },
@@ -20,6 +21,7 @@ export default function Wrapper({show, children }:any) {
   const activeSection = SECTION_DATA.find(
     (section) => section.href === pathname
   );
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (activeSection?.isFirst || activeSection?.isLast == false) {
@@ -37,9 +39,11 @@ export default function Wrapper({show, children }:any) {
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <Link
+      <Link
           href="/"
-          className={`flex items-center text-2xl font-bold dark:text-white`}
+          className={`flex items-center text-2xl font-bold ${  //this will update the text color based on the backghround
+            theme === "dark" ? "dark:text-white" : "text-black"
+          }`}
         >
           {/* Scholarly */}
           <span
@@ -61,9 +65,13 @@ export default function Wrapper({show, children }:any) {
                       >
                           <span className="">Back</span>
                       </Button>
-                  </Link><div className={`text-xs font-bold py-2  group-hover:bg-[#e1ffe1c5]`}>
+                  </Link><div
+              className={`text-xs font-bold py-2 group-hover:bg-[#e1ffe1c5] ${
+                theme === "dark" ? "dark:text-white" : "text-black"
+              }`}
+            >
                           <p className="text-xs">
-                              <span className="inline-block dark:text-white">
+                              <span className="inline-block">
                                   {pathname === activeSection?.href ? activeSection.label : null}
                               </span>
                               <span className="inline-block px-3 opacity-50">/</span>
