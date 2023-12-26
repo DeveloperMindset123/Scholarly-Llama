@@ -59,21 +59,9 @@ export default function Page() {
     setError(null);
   
     if (!query && !pdf) {
-      // setMessageState((state) => ({
-      //   ...state,
-      //   messages: [
-      //     ...state.messages,
-      //     {
-      //       type: 'apiMessage',
-      //       message: "Please input a question or upload a file.",
-      //     },
-      //   ],
-      //   history: [],
-      // }))
       return;
     }
-  
-    // If a file is selected, use it in the processing logic
+
     if (pdf) {
       try {
         setReady(true);
@@ -107,8 +95,6 @@ export default function Page() {
 
         const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "");
         
-
-        // Upload PDF to Supabase bucket
         const { data, error } = await supabase.storage
           .from('pdfs')
           .upload(`public/${PINECONE_NAME_SPACE}.pdf`, pdf, {
@@ -149,8 +135,7 @@ export default function Page() {
             },
           ],
         }));
-    
-        // setTimeout(async()=>{
+
            try {
           const response = await fetch('/api/chat', {
             method: 'POST',
@@ -192,54 +177,7 @@ export default function Page() {
               setError('An error occurred while fetching the data. Please try again.');
               console.log('error', error);
             }
-        // },10000)
-               
-        
-        // setQuery('');
-    
-        // try {
-        //   const response = await fetch('/api/chat', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //       question:"What should I know of this context?",
-        //       history,
-        //       PINECONE_NAME_SPACE
-        //     }),
-        //   });
-        //   const data = await response.json();
-    
-        //   console.log(data.text)
-    
-        //   if (data.error) {
-        //     setError(data.error);
-        //   } else {
-        //     setMessageState((state) => ({
-        //       ...state,
-        //       messages: [
-        //         ...state.messages,
-        //         {
-        //           type: 'apiMessage',
-        //           message: data.text,
-        //           sourceDocs: data.sourceDocuments,
-        //         },
-        //       ],
-        //       history: [...state.history, ["What should I know of this context?", data.text]],
-        //     }));
-        //   }
-    
-    
-        //   setLoading(false);
-    
-        //   //scroll to bottom
-        // } catch (error) {
-        //   setLoading(false);
-        //   setError('An error occurred while fetching the data. Please try again.');
-        //   console.log('error', error);
-        // }
-        
+   
         
       } catch (error) {
         setError('An error occurred while processing the file.');
@@ -347,9 +285,6 @@ export default function Page() {
 
   return (
     <>
-        <section className="flex flex-col lg:flex-row">
-        <section className="flex h-screen w-full flex-col justify-between p-9 lg:h-auto">
-      <Wrapper show={true}>
         <div className="mx-auto flex flex-col gap-4">
           <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
             Chat With Your Textbooks
@@ -532,9 +467,6 @@ export default function Page() {
             )}
           </main>
         </div>
-        </Wrapper>
-        </section>
-        </section>
     </>
   );
 }

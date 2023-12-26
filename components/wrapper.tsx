@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import SignoutButton from "./ui/signoutButton";
+import { useAuth } from "./authProvider";
 
 const SECTION_DATA = [
   { label: 1, href: "/", isFirst: true, isLast: false },
@@ -19,6 +20,7 @@ export default function Wrapper({show, children }:any) {
   const [nextPage, setNextPage] = useState<undefined | string>("/");
   const [previousPage, setPreviousPage] = useState<undefined | string>("/");
   const pathname = usePathname();
+  const {isAuthenticated} = useAuth();
   const activeSection = SECTION_DATA.find(
     (section) => section.href === pathname
   );
@@ -40,23 +42,30 @@ export default function Wrapper({show, children }:any) {
   return (
     <>
       <div className="flex w-full items-center justify-between">
-      <Link
+        {!show && (
+          <Link
           href="/"
           className={`flex items-center text-2xl font-bold ${  //this will update the text color based on the backghround
             theme === "dark" ? "dark:text-white" : "text-black"
           }`}
         >
-          {/* Scholarly */}
-          <span
-            className={`text-sm font-bold group ml-1 mt-2 inline-block rounded-3xl bg-[#fafafa] px-6 text-black`}
-          >
-            <span className="">.LLAMA</span>
-          </span>
-        </Link>
+        {/* Scholarly */}
+        <span
+          className={`text-sm font-bold group ml-1 mt-2 inline-block rounded-3xl bg-[#fafafa] px-6 py-2 text-black`}
+        >
+          <span className="">.LLAMA</span>
+        </span>
+      </Link>
+        )}
+        {show && (
+          <div/>
+        )}
 
           <div className="flex items-center gap-2">
           <ThemeToggle />
-          <SignoutButton />
+         {isAuthenticated && (
+           <SignoutButton />
+         )}
           </div>
       </div>
      
