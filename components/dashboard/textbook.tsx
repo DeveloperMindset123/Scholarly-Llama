@@ -8,6 +8,7 @@ import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
 import {PINECONE_NAME_SPACE} from 'config/pinecone'
 import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/initSupabase';
 import {
   Accordion,
   AccordionContent,
@@ -15,6 +16,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import Wrapper from '@/components/wrapper';
+import { useAuth } from '../authProvider';
 
 
 export default function Page() {
@@ -24,6 +26,7 @@ export default function Page() {
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const {user} = useAuth();
   const router = useRouter()
   const [messageState, setMessageState] = useState<{
     messages: Message[];
@@ -67,6 +70,21 @@ export default function Page() {
         setReady(true);
         setLoading(true);
 
+        const { data:bookData, error:bookError } = await supabase
+          .from('books')
+          .insert([
+            { title: pdf.name, user_id: user.id } 
+          ])
+          .select()
+          
+      
+        console.log(bookData)
+
+        if (bookError) {
+          console.error('Error creating new book to Supabase:', bookError);
+          return;
+        }
+
         setMessageState((state) => ({
           ...state,
           messages: [
@@ -90,10 +108,6 @@ export default function Page() {
           history: [...state.history],
         }));},2000)
 
- 
-      
-
-        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "");
         
         const { data, error } = await supabase.storage
           .from('pdfs')

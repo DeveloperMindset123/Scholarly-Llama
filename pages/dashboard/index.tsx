@@ -7,10 +7,10 @@ import { supabase } from '@/lib/initSupabase';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/components/authProvider';
 import { FileEarmarkPlus, PencilSquare } from 'react-bootstrap-icons';
-import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import Page from '../../components/dashboard/textbook';
 import Sidebar from '@/components/dashboard/sidebar';
+import Link from "next/link";
 
 function Box({text}:any){
     return (
@@ -33,12 +33,12 @@ export default function Dashboard( ) {
     return (    
     <>
     <div className="w-48 bg-[#fafafa] h-[100%] flex-col justify-center items-start gap-6 pr-2  fixed">
-        <div className='flex mt-2 ml-2 items-center justify-between text-black p-2  rounded-xl cursor-pointer hover:bg-gray-200'>
+        <Link href='/dashboard' className='flex mt-2 ml-2 items-center justify-between text-black p-2  rounded-xl cursor-pointer hover:bg-gray-200'>
             <span className={`text-sm font-bold rounded-3xltext-black`}>
                 <span className="">.LLAMA</span>
             </span>
             <PencilSquare className='text-black text-xl '/>
-        </div>
+        </Link>
 
         <div className='mt-10 ml-2 text-black w-[92%]  flex-col truncate text-sm'>
             <Sidebar/>
