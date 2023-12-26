@@ -30,7 +30,7 @@ export default function Sidebar(){
 
     return(
         <>
-            {loading && <LoadingDots color="black" props={"ml-20"}/>}
+            {loading && <LoadingDots color="grey" props={"ml-20"}/>}
             {!loading && books.map((book:any, index:any) => (
                 <Element key={index} books={book}/>
             )

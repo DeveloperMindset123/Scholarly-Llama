@@ -7,10 +7,10 @@ import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
 import {PINECONE_NAME_SPACE} from 'config/pinecone'
-import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/initSupabase';
-import { useAuth } from '../authProvider';
-
+import { useParams } from 'next/navigation'
+import { useAuth } from '@/components/authProvider';
+import Layout from '@/components/dashboard/layout';
 
 export default function Page() {
   const [pdf, setPdf] = useState<any>(null);
@@ -20,6 +20,7 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
+  const router = useRouter()
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -34,6 +35,18 @@ export default function Page() {
     ],
     history: [],
   });
+
+  useEffect(()=>{
+    (async () => {
+        const { data, error } = await supabase
+        .from('messages')
+        .select(`${router.query.slug}`)
+
+        console.log(data)
+        setLoading(false);
+    })()
+   
+},[router.query.slug, router])
 
 
   const { messages, history } = messageState;
@@ -478,4 +491,12 @@ export default function Page() {
         </div>
     </>
   );
+}
+
+Page.getLayout = function getLayout(page:any) {
+  return (
+    <Layout>
+      {page}
+    </Layout>
+  )
 }
