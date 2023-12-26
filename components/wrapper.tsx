@@ -39,15 +39,17 @@ export default function Wrapper({show, children }:any) {
   return (
     <>
       <div className="flex w-full items-center justify-between">
-      <Link
-          href="/"
-          className={`flex items-center text-2xl font-bold ${  //this will update the text color based on the backghround
-            theme === "dark" ? "dark:text-white" : "text-black"
+        <Link
+          href="/404"
+          className={`flex items-center text-2xl font-bold ${
+            theme === "dark" ? "dark:text-white" : theme === "system" ? "text-white" : "text-black"
           }`}
         >
           Scholarly
           <span
-            className={`text-sm font-bold group ml-1 mt-1 inline-block rounded-3xl bg-[#fafafa] px-3 text-black`}
+            className={`text-sm font-bold group ml-1 mt-1 inline-block rounded-3xl bg-[#fafafa] px-3 ${
+              theme === "dark" || theme === "system" ? "text-black" : "text-white"
+            }`}
           >
             <span className="">Llama</span>
           </span>
@@ -57,36 +59,46 @@ export default function Wrapper({show, children }:any) {
       </div>
       {children}
       <div className="flex w-full items-center justify-between">
-      {!show && (
-         <><Link href={previousPage as string} passHref>
-                      <Button
-                          disabled
-                          className="text-sm font-bold rounded-3xl bg-[#e0dede] text-black dark:bg-zinc-800 dark:text-zinc-400 px-7 py-2 opacity-50 hover:bg-[#d1d0d0] dark:hover:bg-zinc-900"
-                      >
-                          <span className="">Back</span>
-                      </Button>
-                  </Link><div
+        {!show && (
+          <>
+            <Link href={previousPage as string} passHref>
+            <Button
+            disabled
+            className={`text-sm font-bold rounded-3xl ${
+            theme === "light" ? "bg-black-900 text-black dark:bg-zinc-800 dark:text-zinc-400" : ""
+            } px-7 py-2 hover:bg-[#FFC107] ${
+            theme === "dark" || theme === "system" ? "dark:hover:bg-zinc-900" : ""
+            }`}
+            >
+              <span className={theme === "light" ? "text-white" : ""}>Back</span>
+              </Button>
+            </Link>
+            <div
               className={`text-xs font-bold py-2 group-hover:bg-[#e1ffe1c5] ${
-                theme === "dark" ? "dark:text-white" : "text-black"
+                theme === "dark" ? "dark:text-white" : theme === "system" ? "text-white" : "text-black"
               }`}
             >
-                          <p className="text-xs">
-                              <span className="inline-block">
-                                  {pathname === activeSection?.href ? activeSection.label : null}
-                              </span>
-                              <span className="inline-block px-3 opacity-50">/</span>
-                              <span className="inline-block dark:text-white opacity-50">
-                                  {SECTION_DATA.length}
-                              </span>
-                          </p>
-                      </div><Link href={nextPage as string} passHref>
-                          <Button
-                              className={`text-sm font-bold rounded-3xl bg-zinc-900 text-white dark:bg-white px-7 py-2 dark:text-black`}
-                          >
-                              <span className="">Next</span>
-                          </Button>
-                      </Link></>
-       )}
+              <p className="text-xs">
+                <span className="inline-block">
+                  {pathname === activeSection?.href ? activeSection.label : null}
+                </span>
+                <span className="inline-block px-3 opacity-50">/</span>
+                <span className="inline-block dark:text-white opacity-50">
+                  {SECTION_DATA.length}
+                </span>
+              </p>
+            </div>
+            <Link href={nextPage as string} passHref>
+              <Button
+                className={`text-sm px-7 py-2 bg-[#FFD700] font-bold rounded-3xl ${
+                  theme === "dark" || theme === "system" ? "bg-[#4CAF50] text-white dark:bg-white px-7 py-2 dark:text-black" : "bg-[#FFD700] text-black"
+                }`}
+              >
+                <span className={theme === "light" ? "text-black" : ""}>Next</span>
+              </Button>
+            </Link>
+          </>
+        )}
       </div>
     </>
   );
