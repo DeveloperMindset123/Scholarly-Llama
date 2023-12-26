@@ -4,10 +4,16 @@ import Sidebar from "./sidebar";
 import Wrapper from "../wrapper";
 import { supabase } from "@/lib/initSupabase";
 import { useState, useEffect } from "react";
+import { createContext, useContext } from "react";
+
+
+  
+const BooksContext = createContext<any>(null);
 
 export default function Layout({children}:any){
     const [books, setBooks] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [activeChat, setActiveChat] = useState<any>("");
 
     useEffect(()=>{
         (async () => {
@@ -17,13 +23,13 @@ export default function Layout({children}:any){
 
             data?.reverse()
             setBooks(data);
-            setLoading(false);
+            setLoading(false)
         })()
        
     },[])
 
     return(
-        <>
+        <BooksContext.Provider value={{ books, setBooks, activeChat, setActiveChat }}>
         <div className="w-[13rem] bg-[#fafafa] h-[100%] flex-col justify-center items-start gap-6 pr-2  fixed">
             <Link href='/dashboard' className='flex mt-2 ml-2 items-center justify-between text-black p-2  rounded-xl cursor-pointer hover:bg-gray-200'>
                 <span className={`text-sm font-bold rounded-3xltext-black`}>
@@ -32,8 +38,8 @@ export default function Layout({children}:any){
                 <PencilSquare className='text-black text-xl '/>
             </Link>
     
-            <div className='mt-10 ml-2 text-black w-[92%]  flex-col truncate text-sm'>
-                <Sidebar loading={loading} books={books}/>
+            <div className='mt-10 ml-2 text-black w-[92%]  flex-col truncate text-sm overflow-y-scroll'>
+                <Sidebar loading={loading}  />
             </div>
           
         </div>
@@ -44,6 +50,8 @@ export default function Layout({children}:any){
                 </Wrapper>
             </section>
     </section>
-        </>
+    </BooksContext.Provider>
     )
 }
+
+export const useBooks = () => useContext(BooksContext);

@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/router'
-import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, useContext } from 'react';
 import styles from '@/styles/Home.module.css';
 import { Message } from '@/types/chat';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import { Document } from 'langchain/document';
 import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/initSupabase';
 import { useAuth } from '@/components/authProvider';
-import Layout from '@/components/dashboard/layout';
+import Layout, { useBooks } from '@/components/dashboard/layout';
 
 
 export default function Page() {
@@ -22,6 +22,7 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
+  const {books, setBooks, setActiveChat} = useBooks();
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -102,7 +103,8 @@ export default function Page() {
       }
       
       setBookNamespace(bookData[0].namespace)
-
+      console.log(bookData[0].namespace)
+      setActiveChat(bookData[0].namespace)
         
         const { data, error } = await supabase.storage
           .from('pdfs')
@@ -140,11 +142,7 @@ export default function Page() {
         .from('messages')
         .insert({ message:pdf.name, type: 'userMessage', book_namespace:bookData[0].namespace })
 
-        setBooks((state:any) => [...state, bookData[0]])
-
-        console.log(bookData[0].namespace)
-        console.log(msgData, msgError);
-
+        setBooks((state:any) => [ bookData[0], ...state])
 
         await supabase
         .from('messages')

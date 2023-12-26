@@ -3,21 +3,23 @@ import { supabase } from "@/lib/initSupabase"
 import { useEffect, useState } from "react"
 import LoadingDots from "../ui/LoadingDots";
 import Link from "next/link";
+import { useBooks } from "./layout";
 
-function Element({books}: {books:any}){
+function Element({book, props}: any){
     return(
-        <Link href={`/dashboard/${books.namespace}`}>
-            <div className='hover:bg-gray-200 rounded-lg p-[0.25rem] pt-[0.25rem] cursor-pointer'>{books.title}</div>
+        <Link href={`/dashboard/${book.namespace}`}>
+            <div className={`${props}  hover:bg-gray-200  rounded-lg p-[0.35rem] cursor-pointer`}>{book.namespace }</div>
         </Link>
     )
 }
 
-export default function Sidebar({loading, books}:any){
+export default function Sidebar({loading}:any){
+    const {activeChat, books} = useBooks();
     return(
         <>
-            {loading && <LoadingDots color="grey" props={"ml-20"}/>}
+            {loading && <LoadingDots style="big" color="grey" props={"ml-20"}/>}
             {!loading && books.map((book:any, index:any) => (
-                <Element key={index} books={book}/>
+                <Element props={activeChat == book.namespace ? "bg-gray-200" : "bg-none"} key={index} book={book}/>
             )
             )}
         </>

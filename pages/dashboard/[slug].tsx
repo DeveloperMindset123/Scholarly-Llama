@@ -9,18 +9,17 @@ import { Document } from 'langchain/document';
 import { supabase } from '@/lib/initSupabase';
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/components/authProvider';
-import Layout from '@/components/dashboard/layout';
+import Layout, { useBooks } from '@/components/dashboard/layout';
 
 export default function Page() {
   const [bookNamespace, setBookNamespace] = useState<string>('');
-  const [pdf, setPdf] = useState<any>(null);
-  const [ready,setReady] = useState<any>(false);
   const [text, setText] = useState<string>('Hi, upload your textbook!');
   const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
   const router = useRouter()
+  const {activeChat, setActiveChat} = useBooks();
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -40,175 +39,35 @@ export default function Page() {
     (async () => {
         const { data, error } = await supabase
         .from('messages')
-        .select(`${router.query.slug}`)
+        .select(' message, type, book_namespace')
+        .eq('book_namespace', `${router.query.slug}`)
+        
+        console.log(data)
 
         setBookNamespace(`${router.query.slug}`);
-        console.log(data)
+        setActiveChat(`${router.query.slug}`)
+
+        if(!data){
+          setLoading(false);
+          return
+        }
+
+        setMessageState((state) => ({
+          ...state,
+          messages:data,
+          history:[],
+        }));
+
         setLoading(false);
     })()
    
-},[router.query.slug, router])
+  },[router.query.slug, router, setActiveChat])
 
 
   const { messages, history } = messageState;
 
   const messageListRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setPdf(selectedFile);
-    }
-  };
-
-
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  
-    setError(null);
-  
-    if (!query && !pdf) {
-      return;
-    }
-
-    if (pdf) {
-      try {
-        setReady(true);
-        setLoading(true);
-
-        const { data:bookData, error:bookError } = await supabase
-          .from('books')
-          .insert([
-            { title: pdf.name, user_id: user.id } 
-          ])
-          .select()
-
-          
-          
-      
-        console.log(bookData)
-
-        // const { data:messageData, error:messageError } = await supabase
-        // .from('messages')
-        // .insert({ message:pdf.name, type: 'userMessage', bookNamespace: bookData?.book_namespace })
-        // .select()
-
-        setMessageState((state) => ({
-          ...state,
-          messages: [
-            ...state.messages,
-            {
-              type: 'userMessage',
-              message: pdf.name,
-            },
-          ],
-        }));
-
-        setTimeout(() => {       setMessageState((state) => ({
-          ...state,
-          messages: [
-            ...state.messages,
-            {
-              type: 'apiMessage',
-              message: "Thank you! Let me process this.",
-            },
-          ],
-          history: [...state.history],
-        }));},2000)
-
-        
-        const { data, error } = await supabase.storage
-          .from('pdfs')
-          .upload(`public/${bookNamespace}.pdf`, pdf, {
-            contentType: 'application/pdf',
-          });
-        
-        if (error) {
-          console.error('Error uploading PDF to Supabase:', error);
-          return;
-        }
-
-        const ingestResponse = await fetch('/api/ingestpines',{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            bookNamespace
-          }),
-        });
-
-        const ingestData = await ingestResponse.json();
-
-        if (ingestData.success) {
-          setReady(true);
-          console.log('PDF uploaded and ingested successfully');
-        } else {
-          console.error('Ingestion failed:', ingestData.error);
-        }
-
-        setMessageState((state) => ({
-          ...state,
-          messages: [
-            ...state.messages,
-            {
-              type: 'userMessage',
-              message: "About the book, What should I know of the context?",
-            },
-          ],
-        }));
-
-           try {
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              question:"About the book, What should I know of the context?",
-              history,
-              bookNamespace
-            }),
-          });
-          const data = await response.json();
-    
-          console.log(data.text)
-    
-          if (data.error) {
-            setError(data.error);
-          } else {
-            setMessageState((state) => ({
-              ...state,
-              messages: [
-                ...state.messages,
-                {
-                  type: 'apiMessage',
-                  message: data.text,
-                  sourceDocs: data.sourceDocuments,
-                },
-              ],
-              history: [...state.history, ["About the book, What should I know of the context?", data.text]],
-            }));
-          }
-  
-          setLoading(false);
-             //scroll to bottom
-            
-            } catch (error) {
-              setLoading(false);
-              setError('An error occurred while fetching the data. Please try again.');
-              console.log('error', error);
-            }
-   
-        
-      } catch (error) {
-        setError('An error occurred while processing the file.');
-        console.log('File Processing Error:', error);
-      }
-    }
-  
-  };
 
   useEffect(() => {
     textAreaRef.current?.focus();
@@ -359,36 +218,6 @@ export default function Page() {
                           </ReactMarkdown>
                         </div>
                       </div>
-                      {/* {message.sourceDocs && (
-                        <div
-                          className="p-5"
-                          key={`sourceDocsAccordion-${index}`}
-                        >
-                          <Accordion
-                            type="single"
-                            collapsible
-                            className="flex-col"
-                          >
-                            {message.sourceDocs.map((doc, index) => (
-                              <div key={`messageSourceDocs-${index}`}>
-                                <AccordionItem value={`item-${index}`}>
-                                  <AccordionTrigger>
-                                    <h3>Source {index + 1}</h3>
-                                  </AccordionTrigger>
-                                  <AccordionContent>
-                                    <ReactMarkdown linkTarget="_blank">
-                                      {doc.pageContent}
-                                    </ReactMarkdown>
-                                    <p className="mt-2">
-                                      <b>Source:</b> {doc.metadata.source}
-                                    </p>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              </div>
-                            ))}
-                          </Accordion>
-                        </div>
-                      )} */}
                     </>
                   );
                 })}
@@ -396,50 +225,6 @@ export default function Page() {
             </div>
             <div className={styles.center}>
               <div className={styles.cloudform}>
-              {!ready && (
-                <>
-                 <form onSubmit={handleFormSubmit}>
-                  <textarea
-                    disabled={true}
-                    onKeyDown={handleEnter}
-                    ref={textAreaRef}
-                    autoFocus={false}
-                    rows={1}
-                    maxLength={512}
-                    id="userInput"
-                    name="userInput"
-                    value={query}
-                    placeholder={!pdf ? 'No file is selected' : pdf.name}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className={`relative resize-none text-lg pl-16 p-4 w-[75vw] rounded-md bg-white text-black outline-none border`}
-                  />
-                  <button
-                    type="submit"
-                    className={styles.generatebutton}
-                  >
-                      <svg
-                        className={`${styles.svgicon}  `}
-                        viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-                      </svg>
-                  </button>
-                </form>
-                <div className={`${styles.wrapper} absolute -mt-[3.8rem] ml-2 `}>
-                  <div className={styles.fileUpload}>
-                    <input type="file" accept='.pdf' id="fileInput" onChange={handleFileUpload} />
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-  <polyline points="17 8 12 3 7 8"></polyline>
-  <line x1="12" y1="3" x2="12" y2="15"></line>
-</svg>
-
-                  </div>
-                </div>
-                </>
-              )}
-              {ready && (
                 <form onSubmit={handleSubmit}>
                   <textarea
                     disabled={loading}
@@ -480,7 +265,6 @@ export default function Page() {
                     )}
                   </button>
                 </form>
-                )}
               </div>
             </div>
             {error && (
