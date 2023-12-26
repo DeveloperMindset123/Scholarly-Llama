@@ -10,7 +10,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", proces
 export default async function handler(req:any, res:any) {
 
   try {
-    const PINECONE_NAME_SPACE = req.body.PINECONE_NAME_SPACE;
+    const PINECONE_NAME_SPACE = req.body.bookNamespace;
     const { data, error } = await supabase.storage
       .from('pdfs')
       .download(`public/${PINECONE_NAME_SPACE}.pdf`);

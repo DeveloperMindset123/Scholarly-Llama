@@ -8,12 +8,8 @@
 import {v4} from 'uuid';
 
 
-const myUUID = v4();
 
 const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME || 'scholarlyllama';
 
 
-const PINECONE_NAME_SPACE = myUUID; //namespace is optional for your vectors, might have
-//to change this to
-
-export { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE };
+export { PINECONE_INDEX_NAME };

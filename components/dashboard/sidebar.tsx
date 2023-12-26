@@ -12,22 +12,7 @@ function Element({books}: {books:any}){
     )
 }
 
-export default function Sidebar(){
-    const [loading, setLoading] = useState<boolean>(true);
-    const [books, setBooks] = useState<any>([]);
-    
-    useEffect(()=>{
-        (async () => {
-            const { data, error } = await supabase
-            .from('books')
-            .select()
-
-            setBooks(data);
-            setLoading(false);
-        })()
-       
-    },[])
-
+export default function Sidebar({loading, books}:any){
     return(
         <>
             {loading && <LoadingDots color="grey" props={"ml-20"}/>}

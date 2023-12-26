@@ -7,7 +7,6 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
-import {PINECONE_NAME_SPACE} from 'config/pinecone'
 import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/initSupabase';
 import { useAuth } from '@/components/authProvider';
@@ -52,6 +51,7 @@ export default function Page() {
   };
 
 
+
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
@@ -65,21 +65,6 @@ export default function Page() {
       try {
         setReady(true);
         setLoading(true);
-
-        const { data:bookData, error:bookError } = await supabase
-          .from('books')
-          .insert([
-            { title: pdf.name, user_id: user.id } 
-          ])
-          .select()
-      
-        if(bookData){
-            setBookNamespace(bookData[0].namespace)
-        }
-
-        await supabase
-        .from('messages')
-        .insert({ message:pdf.name, type: 'userMessage', bookNamespace })
 
         setMessageState((state) => ({
           ...state,
@@ -104,14 +89,24 @@ export default function Page() {
           history: [...state.history],
         }));},2000)
 
-        await supabase
-        .from('messages')
-        .insert({ message:"Thank you! Let me process this.", type: 'apiMessage', bookNamespace })
+        const { data:bookData, error:bookError } = await supabase
+        .from('books')
+        .insert([
+          { title: pdf.name, user_id: user.id } 
+        ])
+        .select()
+    
+      if(!bookData){
+          console.error(bookError)
+          return;
+      }
+      
+      setBookNamespace(bookData[0].namespace)
 
         
         const { data, error } = await supabase.storage
           .from('pdfs')
-          .upload(`public/${bookNamespace}.pdf`, pdf, {
+          .upload(`public/${bookData[0].namespace}.pdf`, pdf, {
             contentType: 'application/pdf',
           });
         
@@ -126,7 +121,7 @@ export default function Page() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            bookNamespace
+            bookNamespace:bookData[0].namespace
           }),
         });
 
@@ -139,6 +134,23 @@ export default function Page() {
           console.error('Ingestion failed:', ingestData.error);
         }
 
+
+      
+       const {data:msgData, error:msgError} =  await supabase
+        .from('messages')
+        .insert({ message:pdf.name, type: 'userMessage', book_namespace:bookData[0].namespace })
+
+        setBooks((state:any) => [...state, bookData[0]])
+
+        console.log(bookData[0].namespace)
+        console.log(msgData, msgError);
+
+
+        await supabase
+        .from('messages')
+        .insert({ message:"Thank you! Let me process this.", type: 'apiMessage', book_namespace:bookData[0].namespace })
+
+
         setMessageState((state) => ({
           ...state,
           messages: [
@@ -150,6 +162,12 @@ export default function Page() {
           ],
         }));
 
+        await supabase
+        .from('messages')
+        .insert({ message:"About the book, What should I know of the context?", type: 'userMessage', book_namespace:bookData[0].namespace })
+
+
+
            try {
           const response = await fetch('/api/chat', {
             method: 'POST',
@@ -159,7 +177,7 @@ export default function Page() {
             body: JSON.stringify({
               question:"About the book, What should I know of the context?",
               history,
-              PINECONE_NAME_SPACE
+              bookNamespace:bookData[0].namespace
             }),
           });
           const data = await response.json();
@@ -180,18 +198,14 @@ export default function Page() {
               ],
               history: [...state.history, ["About the book, What should I know of the context?", data.text]],
             }));
-            
+
             await supabase
             .from('messages')
-            .insert({ message:data.text, type: 'apiMessage', bookNamespace })
+            .insert({ message:data.text, type: 'apiMessage', book_namespace:bookData[0].namespace })
     
           }
 
-          await supabase
-          .from('messages')
-          .insert({ message:"About the book, What should I know of the context?", type: 'userMessage', bookNamespace })
-  
- 
+       
           
   
           setLoading(false);
@@ -252,9 +266,10 @@ export default function Page() {
       ],
     }));
 
+    console.log(bookNamespace)
     await supabase
     .from('messages')
-    .insert({ message:question, type: 'userMessage', bookNamespace })
+    .insert({ message:question, type: 'userMessage', book_namespace:bookNamespace })
 
 
     setLoading(true);
@@ -269,7 +284,7 @@ export default function Page() {
         body: JSON.stringify({
           question,
           history,
-          PINECONE_NAME_SPACE
+          bookNamespace
         }),
       });
       const data = await response.json();
@@ -294,7 +309,7 @@ export default function Page() {
 
         await supabase
         .from('messages')
-        .insert({ message:data.text, type: 'apiMessage', bookNamespace })
+        .insert({ message:data.text, type: 'apiMessage', book_namespace:bookNamespace })
     
       }
 

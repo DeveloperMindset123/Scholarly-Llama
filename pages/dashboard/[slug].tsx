@@ -6,13 +6,13 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
-import {PINECONE_NAME_SPACE} from 'config/pinecone'
 import { supabase } from '@/lib/initSupabase';
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/components/authProvider';
 import Layout from '@/components/dashboard/layout';
 
 export default function Page() {
+  const [bookNamespace, setBookNamespace] = useState<string>('');
   const [pdf, setPdf] = useState<any>(null);
   const [ready,setReady] = useState<any>(false);
   const [text, setText] = useState<string>('Hi, upload your textbook!');
@@ -42,6 +42,7 @@ export default function Page() {
         .from('messages')
         .select(`${router.query.slug}`)
 
+        setBookNamespace(`${router.query.slug}`);
         console.log(data)
         setLoading(false);
     })()
@@ -119,7 +120,7 @@ export default function Page() {
         
         const { data, error } = await supabase.storage
           .from('pdfs')
-          .upload(`public/${PINECONE_NAME_SPACE}.pdf`, pdf, {
+          .upload(`public/${bookNamespace}.pdf`, pdf, {
             contentType: 'application/pdf',
           });
         
@@ -134,7 +135,7 @@ export default function Page() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            PINECONE_NAME_SPACE
+            bookNamespace
           }),
         });
 
@@ -167,7 +168,7 @@ export default function Page() {
             body: JSON.stringify({
               question:"About the book, What should I know of the context?",
               history,
-              PINECONE_NAME_SPACE
+              bookNamespace
             }),
           });
           const data = await response.json();
@@ -261,7 +262,7 @@ export default function Page() {
         body: JSON.stringify({
           question,
           history,
-          PINECONE_NAME_SPACE
+          bookNamespace
         }),
       });
       const data = await response.json();
