@@ -37,6 +37,7 @@ export default async function handler(req:any, res:any) {
     // // Create and store the embeddings in the vectorStore
     const embeddings = new OpenAIEmbeddings();
     const index = pinecone.Index(PINECONE_INDEX_NAME); // change to your own index name;
+
     // // Embed the PDF documents
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,

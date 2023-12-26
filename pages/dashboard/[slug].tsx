@@ -42,20 +42,36 @@ export default function Page() {
         .select(' message, type, book_namespace')
         .eq('book_namespace', `${router.query.slug}`)
         
-        console.log(data)
-
         setBookNamespace(`${router.query.slug}`);
         setActiveChat(`${router.query.slug}`)
 
-        if(!data){
+
+        if(data == null || data.length == 0){
+          setMessageState((state)=>({
+            ...state,
+            messages:[{
+              message: "Hi, upload your textbook!",  
+              type: 'apiMessage',
+            }],
+            history:[],
+          }))
           setLoading(false);
           return
         }
 
+        setMessageState((state)=>({
+          ...state,
+          messages:[{
+            message: "Hi, upload your textbook!",  
+            type: 'apiMessage',
+          }],
+          history:[],
+        }))
+
         setMessageState((state) => ({
           ...state,
           messages:data,
-          history:[],
+          history:[...state.history, data[data.length-1].message],
         }));
 
         setLoading(false);

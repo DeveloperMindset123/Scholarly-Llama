@@ -38,6 +38,9 @@ export default function Page() {
     history: [],
   });
 
+  useEffect(()=>{
+    setActiveChat("")
+  },[setActiveChat])
 
   const { messages, history } = messageState;
 

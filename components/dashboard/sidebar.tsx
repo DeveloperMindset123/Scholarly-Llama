@@ -8,7 +8,7 @@ import { useBooks } from "./layout";
 function Element({book, props}: any){
     return(
         <Link href={`/dashboard/${book.namespace}`}>
-            <div className={`${props}  hover:bg-gray-200  rounded-lg p-[0.35rem] cursor-pointer`}>{book.namespace }</div>
+            <div className={`${props}  hover:bg-gray-200  rounded-lg p-[0.35rem] cursor-pointer`}>{book.title }</div>
         </Link>
     )
 }
