@@ -9,7 +9,8 @@ import { useAuth } from '@/components/authProvider';
 import { FileEarmarkPlus, PencilSquare } from 'react-bootstrap-icons';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import Page from './textbooks/[slug]';
+import Page from '../../components/dashboard/textbook';
+import Sidebar from '@/components/dashboard/sidebar';
 
 function Box({text}:any){
     return (
@@ -40,8 +41,7 @@ export default function Dashboard( ) {
         </div>
 
         <div className='mt-10 ml-2 text-black w-[92%]  flex-col truncate text-sm'>
-            <div className='hover:bg-gray-200 rounded-lg p-[0.25rem] pt-[0.25rem] cursor-pointer'>Automata Theory</div>
-            <div className='hover:bg-gray-200 rounded-lg p-[0.25rem] pt-[0.25rem] cursor-pointer blur-right'>How to be an A+ Student for ur monka</div>
+            <Sidebar/>
         </div>
       
     </div>
