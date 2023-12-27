@@ -13,7 +13,7 @@ export default function Home() {
         <Wrapper>
           <div className="mx-auto flex max-w-sm flex-col justify-between">
             <span
-              className={`-mt-14 inline-block text-[64px] font-bold text-black dark:text-white`}
+              className={`-mt-14 inline-block text-[64px] font-bold light:text-black dark:text-white`}
             >
               02
             </span>

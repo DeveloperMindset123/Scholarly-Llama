@@ -5,6 +5,7 @@ import Wrapper from "@/components/wrapper";
 import { Button } from "@/components/ui/button";
 import DashboardButton  from "@/components/ui/dashboardButton"
 import robot from "@/public/bot-image.png";
+import { useTheme } from "next-themes";
 
 //imports for supabase
 import { createClient } from "@supabase/supabase-js";
@@ -31,6 +32,7 @@ export const supabase = createClient(supabasUrl, supabaseAnonKey); //accepts two
 
 //this is the homepage where we are rediretected to
 export default function Home() {
+  const { theme } = useTheme();  //needed to add this so that I can use the conditional statement
 
   return (
     <section className="flex flex-col lg:flex-row">
@@ -38,9 +40,13 @@ export default function Home() {
         <Wrapper>
           <div className="mx-auto flex max-w-sm flex-col justify-between">
             <span
-              className={`-mt-14 inline-block text-[64px] font-bold text-black dark:text-white`}
+              className={`-mt-14 inline-block text-[64px] font-bold text-black`}
             >
-              01
+              <h1>
+              <span className={theme === "dark" ? "dark:text-white" : theme === "system" ? "text-white" : "text-black"}>
+                01
+              </span>
+            </h1>
             </span>
             <p className="pb-6 font-medium">
               ScholarlyLlama -  Our friend right here transforms your textbooks into dynamic chatbots, offering a unique and engaging way to explore and understand your course materials.
