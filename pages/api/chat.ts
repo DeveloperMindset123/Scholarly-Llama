@@ -4,14 +4,13 @@ import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { makeChain } from '@/utils/makechain';
 import { pinecone } from '@/utils/pinecone-client';
-import { PINECONE_INDEX_NAME } from '@/config/pinecone';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   const { question, history, bookNamespace } = req.body;
-
+  const PINECONE_INDEX_NAME = 'scholar-llama';
   //only accept post requests
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
