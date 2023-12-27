@@ -8,11 +8,10 @@ import { supabase } from '@/lib/initSupabase';
 
 export default async function handler(req: any, res: any) {
   try {
-    console.log('yoooo api...')
+
     const PINECONE_INDEX_NAME = 'scholar-llama';
     const PINECONE_NAME_SPACE = req.body.bookNamespace;
-    console.log(PINECONE_NAME_SPACE)
-    console.log(PINECONE_INDEX_NAME)
+
     const { data, error } = await supabase.storage
       .from('pdfs')
       .download(`public/${PINECONE_NAME_SPACE}.pdf`);
@@ -39,20 +38,7 @@ export default async function handler(req: any, res: any) {
     const docs = await textSplitter.splitDocuments(loadedPdf);
     console.log('split docs', docs);
 
-    console.log('creating vector store...');
-
-    // // Create and store the embeddings in the vectorStore
-    const embeddings = new OpenAIEmbeddings();
-    const index = pinecone.Index(PINECONE_INDEX_NAME); // change to your own index name;
-
-    // // Embed the PDF documents
-    await PineconeStore.fromDocuments(docs, embeddings, {
-      pineconeIndex: index,
-      namespace: PINECONE_NAME_SPACE,
-      textKey: 'text',
-    });
-
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, docs });
   } catch (error) {
     console.error('Ingestion error:', error);
     res.status(500).json({ success: false, error: 'Failed to ingest data' });

@@ -144,7 +144,7 @@ export default function Page() {
 
 
         console.log('boutta call api')
-        const ingestResponse = await fetch('/api/ingestpines', {
+        const pdfProcessResponse = await fetch('/api/processPdf', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -154,9 +154,21 @@ export default function Page() {
           }),
         });
 
+        const pdfProcessData = await pdfProcessResponse.json();
+
+        const ingestResponse = await fetch('/api/ingestData', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            docs: pdfProcessData.docs,
+          }),
+        });
+
         const ingestData = await ingestResponse.json();
 
-        if (ingestData.success) {
+        if (pdfProcessData && ingestData.success) {
           setReady(true);
           console.log('PDF uploaded and ingested successfully');
         } else {
