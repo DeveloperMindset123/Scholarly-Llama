@@ -17,3 +17,7 @@
     color: rgb(177, 177, 177);
     -webkit-font-smoothing: antialiased;
   }
+
+  html{
+    overflow:hidden;
+  }

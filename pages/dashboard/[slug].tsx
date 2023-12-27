@@ -10,16 +10,14 @@ import { supabase } from '@/lib/initSupabase';
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/components/authProvider';
 import Layout, { useBooks } from '@/components/dashboard/layout';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default function Page() {
   const [bookNamespace, setBookNamespace] = useState<string>('');
-  const [text, setText] = useState<string>('Hi, upload your textbook!');
-  const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const {user} = useAuth();
   const router = useRouter()
-  const {activeChat, setActiveChat} = useBooks();
+  const { setActiveChat, books, loading:loadingBooks} = useBooks();
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -27,21 +25,38 @@ export default function Page() {
     pendingSourceDocs?: Document[];
   }>({
     messages: [
-      {
-        message: text,  //adjust this as needed
-        type: 'apiMessage',
-      },
     ],
     history: [],
   });
 
   useEffect(()=>{
     (async () => {
+
+      if(loadingBooks || books.length == 0 || !router.query.slug){
+        return
+      }
+
+      const filteredArray = books.filter((e:any)=>{
+        return e.namespace == `${router.query.slug}`
+      })
+
+      if(filteredArray.length == 0){
+        router.push('/404')
+        return
+      }
+
         const { data, error } = await supabase
         .from('messages')
         .select(' message, type, book_namespace')
         .eq('book_namespace', `${router.query.slug}`)
-        
+        .order('created_at', { ascending: false })
+        .limit(30)
+
+        if(data){
+          console.log(data[data.length-1])
+        }
+        data?.reverse()
+
         setBookNamespace(`${router.query.slug}`);
         setActiveChat(`${router.query.slug}`)
 
@@ -68,13 +83,13 @@ export default function Page() {
         setLoading(false);
     })()
    
-  },[router.query.slug, router, setActiveChat])
+  },[router.query.slug, router, setActiveChat, books, loadingBooks])
 
 
   const { messages, history } = messageState;
 
   const messageListRef = useRef<HTMLDivElement>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef<any>("");
 
   useEffect(() => {
     textAreaRef.current?.focus();
@@ -98,16 +113,16 @@ export default function Page() {
 
     setError(null);
 
-    if (!query) {
+    if (textAreaRef.current.value == "" || textAreaRef.current.value == null || !textAreaRef.current.value) {
       alert('Please input a question');
       return;
     }
 
-    const question = query.trim();
+    const question = textAreaRef.current.value.trim();
 
     setMessageState((state) => ({
       ...state,
-      messages: [
+      messages: [ 
         ...state.messages,
         {
           type: 'userMessage',
@@ -122,7 +137,7 @@ export default function Page() {
 
 
     setLoading(true);
-    setQuery('');
+    textAreaRef.current.value = '';
 
     try {
       const response = await fetch('/api/chat', {
@@ -175,7 +190,7 @@ export default function Page() {
 
   //prevent empty submissions
   const handleEnter = (e: any) => {
-    if (e.key === 'Enter' && query) {
+    if (e.key === 'Enter' && textAreaRef.current.value) {
       handleSubmit(e);
     } else if (e.key == 'Enter') {
       e.preventDefault();
@@ -184,7 +199,7 @@ export default function Page() {
 
   return (
     <>
-        <div className="mx-auto flex flex-col gap-4">
+        <div className="mx-auto flex flex-col gap-4 ">
           <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
             Chat With Your Textbooks
           </h1>
@@ -235,6 +250,36 @@ export default function Page() {
                           </ReactMarkdown>
                         </div>
                       </div>
+                      {message.sourceDocs && (
+                        <div
+                          className="p-5"
+                          key={`sourceDocsAccordion-${index}`}
+                        >
+                          <Accordion
+                            type="single"
+                            collapsible
+                            className="flex-col"
+                          >
+                            {message.sourceDocs.map((doc, index) => (
+                              <div key={`messageSourceDocs-${index}`}>
+                                <AccordionItem value={`item-${index}`}>
+                                  <AccordionTrigger>
+                                    <h3>Source {index + 1}</h3>
+                                  </AccordionTrigger>
+                                  <AccordionContent>
+                                    <ReactMarkdown linkTarget="_blank">
+                                      {doc.pageContent}
+                                    </ReactMarkdown>
+                                    <p className="mt-2">
+                                      <b>Source:</b> {doc.metadata.source}
+                                    </p>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              </div>
+                            ))}
+                          </Accordion>
+                        </div>
+                      )}
                     </>
                   );
                 })}
@@ -257,8 +302,7 @@ export default function Page() {
                         ? 'Waiting for response...'
                         : 'Enter a prompt here'  //I just changed this here, but you can update it accordingly
                     }
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    // value={query}
                     className={styles.textarea}
                   />
                   <button

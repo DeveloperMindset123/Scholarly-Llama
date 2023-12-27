@@ -32,7 +32,7 @@ export default function Layout({children}:any){
 
 
     return(
-        <BooksContext.Provider value={{ books, setBooks, activeChat, setActiveChat }}>
+        <BooksContext.Provider value={{ books, setBooks, activeChat, setActiveChat, loading }}>
         <div className="w-[13rem] bg-[#fafafa] h-[100%] dark:bg-black flex-col justify-center items-start gap-6 p-2 fixed ">
             <Link href='/dashboard' className='flex mt-2   items-center justify-between dark:text-white text-black p-2 rounded-xl cursor-pointer  transition-all ease-in-out dark:hover:bg-gray-900  hover:bg-gray-200' onClick={
                 ()=>setActiveChat("")
