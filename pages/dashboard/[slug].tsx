@@ -13,13 +13,10 @@ import Layout, { useBooks } from '@/components/dashboard/layout';
 
 export default function Page() {
   const [bookNamespace, setBookNamespace] = useState<string>('');
-  const [text, setText] = useState<string>('Hi, upload your textbook!');
-  const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const {user} = useAuth();
   const router = useRouter()
-  const {activeChat, setActiveChat, books, loading:loadingBooks} = useBooks();
+  const { setActiveChat, books, loading:loadingBooks} = useBooks();
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -27,10 +24,6 @@ export default function Page() {
     pendingSourceDocs?: Document[];
   }>({
     messages: [
-      {
-        message: text,  //adjust this as needed
-        type: 'apiMessage',
-      },
     ],
     history: [],
   });
@@ -55,6 +48,13 @@ export default function Page() {
         .from('messages')
         .select(' message, type, book_namespace')
         .eq('book_namespace', `${router.query.slug}`)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+        if(data){
+          console.log(data[data.length-1])
+        }
+        data?.reverse()
 
         setBookNamespace(`${router.query.slug}`);
         setActiveChat(`${router.query.slug}`)
@@ -88,7 +88,7 @@ export default function Page() {
   const { messages, history } = messageState;
 
   const messageListRef = useRef<HTMLDivElement>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef<any>("");
 
   useEffect(() => {
     textAreaRef.current?.focus();
@@ -112,16 +112,16 @@ export default function Page() {
 
     setError(null);
 
-    if (!query) {
+    if (textAreaRef.current.value == "" || textAreaRef.current.value == null || !textAreaRef.current.value) {
       alert('Please input a question');
       return;
     }
 
-    const question = query.trim();
+    const question = textAreaRef.current.value.trim();
 
     setMessageState((state) => ({
       ...state,
-      messages: [
+      messages: [ 
         ...state.messages,
         {
           type: 'userMessage',
@@ -136,7 +136,7 @@ export default function Page() {
 
 
     setLoading(true);
-    setQuery('');
+    textAreaRef.current.value = '';
 
     try {
       const response = await fetch('/api/chat', {
@@ -189,7 +189,7 @@ export default function Page() {
 
   //prevent empty submissions
   const handleEnter = (e: any) => {
-    if (e.key === 'Enter' && query) {
+    if (e.key === 'Enter' && textAreaRef.current.value) {
       handleSubmit(e);
     } else if (e.key == 'Enter') {
       e.preventDefault();
@@ -198,7 +198,7 @@ export default function Page() {
 
   return (
     <>
-        <div className="mx-auto flex flex-col gap-4">
+        <div className="mx-auto flex flex-col gap-4 ">
           <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
             Chat With Your Textbooks
           </h1>
@@ -271,8 +271,7 @@ export default function Page() {
                         ? 'Waiting for response...'
                         : 'Enter a prompt here'  //I just changed this here, but you can update it accordingly
                     }
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    // value={query}
                     className={styles.textarea}
                   />
                   <button

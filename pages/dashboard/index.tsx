@@ -18,11 +18,10 @@ export default function Page() {
   const [bookNamespace, setBookNamespace] = useState<string>('');
   const [ready,setReady] = useState<any>(false);
   const [text, setText] = useState<string>('Hi, upload your textbook!');
-  const [query, setQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
-  const {books, setBooks, setActiveChat, activeChat} = useBooks();
+  const { setBooks, setActiveChat, activeChat} = useBooks();
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -63,7 +62,7 @@ export default function Page() {
   const { messages, history } = messageState;
 
   const messageListRef = useRef<HTMLDivElement>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef<any>("");
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -79,7 +78,7 @@ export default function Page() {
   
     setError(null);
   
-    if (!query && !pdf) {
+    if (!pdf) {
       return;
     }
 
@@ -267,12 +266,12 @@ export default function Page() {
 
     setError(null);
 
-    if (!query) {
+    if (textAreaRef.current.value == "" || textAreaRef.current.value == null || !textAreaRef.current.value) {
       alert('Please input a question');
       return;
     }
 
-    const question = query.trim();
+    const question = textAreaRef.current.value.trim();
 
     setMessageState((state) => ({
       ...state,
@@ -292,7 +291,7 @@ export default function Page() {
 
 
     setLoading(true);
-    setQuery('');
+    textAreaRef.current.value = '';
 
     try {
       const response = await fetch('/api/chat', {
@@ -345,7 +344,7 @@ export default function Page() {
 
   //prevent empty submissions
   const handleEnter = (e: any) => {
-    if (e.key === 'Enter' && query) {
+    if (e.key === 'Enter' && textAreaRef.current.value) {
       handleSubmit(e);
     } else if (e.key == 'Enter') {
       e.preventDefault();
@@ -454,9 +453,7 @@ export default function Page() {
                     maxLength={512}
                     id="userInput"
                     name="userInput"
-                    value={query}
                     placeholder={!pdf ? 'No file is selected' : pdf.name}
-                    onChange={(e) => setQuery(e.target.value)}
                     className={`relative resize-none text-lg pl-16 p-4 w-[75vw] rounded-md bg-white text-black outline-none border`}
                   />
                   <button
@@ -501,8 +498,6 @@ export default function Page() {
                         ? 'Waiting for response...'
                         : 'Enter a prompt here'  //I just changed this here, but you can update it accordingly
                     }
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
                     className={styles.textarea}
                   />
                   <button
