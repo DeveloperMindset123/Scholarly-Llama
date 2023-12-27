@@ -22,7 +22,7 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
-  const {books, setBooks, setActiveChat} = useBooks();
+  const {books, setBooks, setActiveChat, activeChat} = useBooks();
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -38,9 +38,27 @@ export default function Page() {
     history: [],
   });
 
+
   useEffect(()=>{
     setActiveChat("")
   },[setActiveChat])
+  
+  useEffect(()=>{
+   if(activeChat == ""){
+    setLoading(true)
+    setPdf(null)
+    setReady(null)
+    setMessageState({
+      messages:[
+        {
+          message:'Hi, upload your textbook!',
+          type:'apiMessage',
+        },
+      ],
+      history:[],
+    })
+   }
+  },[activeChat])
 
   const { messages, history } = messageState;
 
@@ -267,7 +285,7 @@ export default function Page() {
       ],
     }));
 
-    console.log(bookNamespace)
+
     await supabase
     .from('messages')
     .insert({ message:question, type: 'userMessage', book_namespace:bookNamespace })

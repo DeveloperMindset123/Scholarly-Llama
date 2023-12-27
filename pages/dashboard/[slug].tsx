@@ -59,15 +59,6 @@ export default function Page() {
           return
         }
 
-        setMessageState((state)=>({
-          ...state,
-          messages:[{
-            message: "Hi, upload your textbook!",  
-            type: 'apiMessage',
-          }],
-          history:[],
-        }))
-
         setMessageState((state) => ({
           ...state,
           messages:data,
@@ -125,6 +116,11 @@ export default function Page() {
       ],
     }));
 
+    await supabase
+    .from('messages')
+    .insert({ message:question, type: 'userMessage', book_namespace:bookNamespace })
+
+
     setLoading(true);
     setQuery('');
 
@@ -159,6 +155,11 @@ export default function Page() {
           ],
           history: [...state.history, [question, data.text]],
         }));
+
+        await supabase
+        .from('messages')
+        .insert({ message:data.text, type: 'apiMessage', book_namespace:bookNamespace })
+    
       }
 
 
