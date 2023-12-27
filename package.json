@@ -15,7 +15,6 @@
     "ingest": "tsx -r dotenv/config scripts/ingest-data.ts"
   },
   "dependencies": {
-    "@esbuild/darwin-arm64": "^0.19.10",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
