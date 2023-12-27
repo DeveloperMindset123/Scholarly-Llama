@@ -51,7 +51,7 @@ export default function Wrapper({show, children }:any) {
         >
         {/* Scholarly */}
         <span
-          className={`text-sm font-bold group ml-1 mt-2 inline-block rounded-3xl bg-[#fafafa] px-6 py-2 text-black`}
+          className={`text-sm  font-bold group ml-1 mt-2 inline-block rounded-3xl bg-[#fafafa] px-6 py-2 text-black`}
         >
           <span className="">.LLAMA</span>
         </span>

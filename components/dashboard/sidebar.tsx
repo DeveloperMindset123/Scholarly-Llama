@@ -8,7 +8,7 @@ import { useBooks } from "./layout";
 function Element({book, props}: any){
     return(
         <Link href={`/dashboard/${book.namespace}`}>
-            <div className={`${props}  hover:bg-gray-200  rounded-lg p-[0.35rem] cursor-pointer`}>{book.title }</div>
+            <div className={`${props} hover:bg-gray-200 hover:z-10 hover:relative  transition-all ease-in-out rounded-lg p-[0.35rem] cursor-pointer`}>{book.title }</div>
         </Link>
     )
 }
@@ -22,6 +22,7 @@ export default function Sidebar({loading}:any){
                 <Element props={activeChat == book.namespace ? "bg-gray-200" : "bg-none"} key={index} book={book}/>
             )
             )}
+             <div className="absolute w-[96%] top-[6rem] -mt-10 pointer-events-none   bg-gradient-to-r from-transparent from-[65%] via-transparent  to-[#fafafa] to-[90%] h-[100%]" />
         </>
     )
 }

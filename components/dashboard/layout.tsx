@@ -5,7 +5,8 @@ import Wrapper from "../wrapper";
 import { supabase } from "@/lib/initSupabase";
 import { useState, useEffect } from "react";
 import { createContext, useContext } from "react";
-
+import Styles from "@/styles/home.module.css"
+import { useAuth } from "../authProvider";
 
   
 const BooksContext = createContext<any>(null);
@@ -14,6 +15,7 @@ export default function Layout({children}:any){
     const [books, setBooks] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [activeChat, setActiveChat] = useState<any>("");
+    const {user} = useAuth();
 
     useEffect(()=>{
         (async () => {
@@ -28,18 +30,31 @@ export default function Layout({children}:any){
        
     },[])
 
+
     return(
         <BooksContext.Provider value={{ books, setBooks, activeChat, setActiveChat }}>
-        <div className="w-[13rem] bg-[#fafafa] h-[100%] flex-col justify-center items-start gap-6 pr-2  fixed">
-            <Link href='/dashboard' className='flex mt-2 ml-2 items-center justify-between text-black p-2  rounded-xl cursor-pointer hover:bg-gray-200'>
+        <div className="w-[13rem] bg-[#fafafa] h-[100%] flex-col justify-center items-start gap-6 p-2 fixed ">
+            <Link href='/dashboard' className='flex mt-2   items-center justify-between text-black p-2 rounded-xl cursor-pointer  transition-all ease-in-out  hover:bg-gray-200'>
                 <span className={`text-sm font-bold rounded-3xltext-black`}>
                     <span className="">.LLAMA</span>
                 </span>
                 <PencilSquare className='text-black text-xl '/>
             </Link>
     
-            <div className='mt-10 ml-2 text-black w-[92%]  flex-col truncate text-sm overflow-y-scroll'>
+            
+            <div className={`${Styles.hideScrollbar} pr-2  h-[88%] overflow-y-scroll overflow-x-hidden`}>
+
+            <div className={`pt-10   text-black w-[100%] flex-col  text-clip whitespace-nowrap  overflow-x-hidden text-sm `}>
                 <Sidebar loading={loading}  />
+            </div>
+            </div>
+            <div className="text-black  text-sm  font-thin flex gap-[0.35rem] items-center h-14 w-full truncate">
+                <img
+                className="inline-block h-8 w-8 rounded-full ml-[0.35rem]"
+                src={user.user_metadata.avatar_url}
+                alt=""
+                />
+                {user.user_metadata.name}
             </div>
           
         </div>

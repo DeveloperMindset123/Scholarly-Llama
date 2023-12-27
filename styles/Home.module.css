@@ -69,6 +69,15 @@
   fill: currentColor;
 }
 
+.hideScrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hideScrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
 .generatebutton:hover {
   background: #e4575726;
   border-radius: 0.2rem;
