@@ -142,9 +142,8 @@ export default function Page() {
           return;
         }
 
-        setBookNamespace(bookData[0].namespace);
-        setActiveChat(bookData[0].namespace);
 
+        console.log('boutta call api')
         const ingestResponse = await fetch('/api/ingestpines', {
           method: 'POST',
           headers: {
@@ -162,7 +161,12 @@ export default function Page() {
           console.log('PDF uploaded and ingested successfully');
         } else {
           console.error('Ingestion failed:', ingestData.error);
+          return;
         }
+
+
+        setBookNamespace(bookData[0].namespace);
+        setActiveChat(bookData[0].namespace);
 
         const { data: msgData, error: msgError } = await supabase
           .from('messages')

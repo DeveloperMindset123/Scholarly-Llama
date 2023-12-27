@@ -8,6 +8,7 @@ import { supabase } from '@/lib/initSupabase';
 
 export default async function handler(req: any, res: any) {
   try {
+    console.log('yoooo api...')
     const PINECONE_INDEX_NAME = 'scholar-llama';
     const PINECONE_NAME_SPACE = req.body.bookNamespace;
     console.log(PINECONE_NAME_SPACE)
