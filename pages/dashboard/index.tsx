@@ -14,12 +14,6 @@ import { Document } from 'langchain/document';
 import { supabase } from '@/lib/initSupabase';
 import { useAuth } from '@/components/authProvider';
 import Layout, { useBooks } from '@/components/dashboard/layout';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 
 export default function Page() {
   const [pdf, setPdf] = useState<any>(null);
@@ -34,7 +28,6 @@ export default function Page() {
     messages: Message[];
     pending?: string;
     history: [string, string][];
-    pendingSourceDocs?: Document[];
   }>({
     messages: [
       {
@@ -218,7 +211,7 @@ export default function Page() {
           });
 
         try {
-          const response = await fetch('/api/chat', {
+          const chatResponse = await fetch('/api/chat', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -229,11 +222,33 @@ export default function Page() {
               bookNamespace: bookData[0].namespace,
             }),
           });
+          const chatData = await chatResponse.json();
+
+          if (chatData.error) {
+            setError(chatData.error);
+            return
+          } 
+
+          
+          
+          const response = await fetch('/api/prompt', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sanitizedQuestion:chatData.sanitizedQuestion,
+              history,
+              retriever:chatData.retriever
+            }),
+          });
           const data = await response.json();
 
           if (data.error) {
             setError(data.error);
-          } else {
+          }else{ 
+
+
             setMessageState((state) => ({
               ...state,
               messages: [
@@ -241,7 +256,6 @@ export default function Page() {
                 {
                   type: 'apiMessage',
                   message: data.text,
-                  sourceDocs: data.sourceDocuments,
                 },
               ],
               history: [
@@ -357,7 +371,6 @@ export default function Page() {
             {
               type: 'apiMessage',
               message: data.text,
-              sourceDocs: data.sourceDocuments,
             },
           ],
           history: [...state.history, [question, data.text]],
@@ -444,33 +457,6 @@ export default function Page() {
                         </ReactMarkdown>
                       </div>
                     </div>
-                    {message.sourceDocs && (
-                      <div className="p-5" key={`sourceDocsAccordion-${index}`}>
-                        <Accordion
-                          type="single"
-                          collapsible
-                          className="flex-col"
-                        >
-                          {message.sourceDocs.map((doc, index) => (
-                            <div key={`messageSourceDocs-${index}`}>
-                              <AccordionItem value={`item-${index}`}>
-                                <AccordionTrigger>
-                                  <h3>Source {index + 1}</h3>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <ReactMarkdown linkTarget="_blank">
-                                    {doc.pageContent}
-                                  </ReactMarkdown>
-                                  <p className="mt-2">
-                                    <b>Source:</b> {doc.metadata.source}
-                                  </p>
-                                </AccordionContent>
-                              </AccordionItem>
-                            </div>
-                          ))}
-                        </Accordion>
-                      </div>
-                    )}
                   </>
                 );
               })}

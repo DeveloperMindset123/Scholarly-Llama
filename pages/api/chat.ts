@@ -9,7 +9,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { question, history, bookNamespace } = req.body;
+  const { question, bookNamespace } = req.body;
   const PINECONE_INDEX_NAME = 'scholar-llama';
   //only accept post requests
   if (req.method !== 'POST') {
@@ -38,9 +38,6 @@ export default async function handler(
 
     // Use a callback to get intermediate sources from the middle of the chain
     let resolveWithDocuments: (value: Document[]) => void;
-    const documentPromise = new Promise<Document[]>((resolve) => {
-      resolveWithDocuments = resolve;
-    });
     const retriever = vectorStore.asRetriever({
       callbacks: [
         {
@@ -51,25 +48,9 @@ export default async function handler(
       ],
     });
 
-    //create chain
-    const chain = makeChain(retriever);
+   
 
-    const pastMessages = history
-      .map((message: [string, string]) => {
-        return [`Human: ${message[0]}`, `Assistant: ${message[1]}`].join('\n');
-      })
-      .join('\n');
-
-    //Ask a question using chat history
-    const response = await chain.invoke({
-      question: sanitizedQuestion,
-      chat_history: pastMessages,
-    });
-
-    const sourceDocuments = await documentPromise;
-
-    console.log('response', response);
-    res.status(200).json({ text: response, sourceDocuments });
+    res.status(200).json({ retriever, sanitizedQuestion});
   } catch (error: any) {
     console.log('error', error);
     res.status(500).json({ error: error.message || 'Something went wrong' });
