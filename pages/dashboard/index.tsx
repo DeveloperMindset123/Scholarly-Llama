@@ -143,7 +143,6 @@ export default function Page() {
         }
 
         setBookNamespace(bookData[0].namespace);
-        console.log(bookData[0].namespace);
         setActiveChat(bookData[0].namespace);
 
         const ingestResponse = await fetch('/api/ingestpines', {

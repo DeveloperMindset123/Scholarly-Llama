@@ -3,16 +3,15 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { pinecone } from '@/utils/pinecone-client';
-import { PINECONE_INDEX_NAME } from '@/config/pinecone';
-import { WebPDFLoader } from 'langchain/document_loaders/web/pdf';
 import { CustomPDFLoader } from '@/utils/customPDFLoader';
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-);
+import { supabase } from '@/lib/initSupabase';
+
 export default async function handler(req: any, res: any) {
   try {
+    const PINECONE_INDEX_NAME = 'scholar-llama';
     const PINECONE_NAME_SPACE = req.body.bookNamespace;
+    console.log(PINECONE_NAME_SPACE)
+    console.log(PINECONE_INDEX_NAME)
     const { data, error } = await supabase.storage
       .from('pdfs')
       .download(`public/${PINECONE_NAME_SPACE}.pdf`);
