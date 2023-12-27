@@ -23,11 +23,9 @@ const inter = Inter({
  export default function MyApp({
   Component,
   pageProps,
-}: AppProps<{
-  initialSession: Session
-}>) { 
+}: any) { 
 
-
+  const getLayout = Component.getLayout ?? ((page:any) => page)
   return (
     <>
       <Provider attribute="class" defaultTheme="system" enableSystem>
@@ -35,11 +33,10 @@ const inter = Inter({
       <main className={inter.variable}>
       <AuthProvider>
         <ProtectedRoute>
-          <Component {...pageProps} />
+          {getLayout(<Component {...pageProps} />)}
         </ProtectedRoute>
         </AuthProvider>
       </main>
-      
       </Provider>
     </>
   );
