@@ -33,15 +33,15 @@ export default function Layout({children}:any){
 
     return(
         <BooksContext.Provider value={{ books, setBooks, activeChat, setActiveChat }}>
-        <div className="w-[13rem] bg-[#fafafa] h-[100%] flex-col justify-center items-start gap-6 p-2 fixed ">
-            <Link href='/dashboard' className='flex mt-2   items-center justify-between text-black p-2 rounded-xl cursor-pointer  transition-all ease-in-out  hover:bg-gray-200' onClick={
+        <div className="w-[13rem] bg-[#fafafa] h-[100%] dark:bg-black flex-col justify-center items-start gap-6 p-2 fixed ">
+            <Link href='/dashboard' className='flex mt-2   items-center justify-between dark:text-white text-black p-2 rounded-xl cursor-pointer  transition-all ease-in-out dark:hover:bg-gray-900  hover:bg-gray-200' onClick={
                 ()=>setActiveChat("")
                 
             }>
                 <span className={`text-sm font-bold rounded-3xltext-black`}>
                     <span className="">.LLAMA</span>
                 </span>
-                <PencilSquare className='text-black text-xl '/>
+                <PencilSquare className='text-black dark:text-white text-xl '/>
             </Link>
     
             
@@ -51,7 +51,7 @@ export default function Layout({children}:any){
                 <Sidebar loading={loading}  />
             </div>
             </div>
-            <div className="text-black  text-sm  font-thin flex gap-[0.35rem] items-center h-14 w-full truncate">
+            <div className="text-black dark:text-white text-sm  font-thin flex gap-[0.35rem] items-center h-14 w-full truncate">
                 <img
                 className="inline-block h-8 w-8 rounded-full ml-[0.35rem]"
                 src={user.user_metadata.avatar_url}

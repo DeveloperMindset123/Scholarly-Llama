@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import ThemeToggle from "./theme-toggle";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import SignoutButton from "./ui/signoutButton";
 import { useAuth } from "./authProvider";
 
@@ -24,7 +23,6 @@ export default function Wrapper({show, children }:any) {
   const activeSection = SECTION_DATA.find(
     (section) => section.href === pathname
   );
-  const { theme } = useTheme();
 
   useEffect(() => {
     if (activeSection?.isFirst || activeSection?.isLast == false) {
@@ -45,17 +43,12 @@ export default function Wrapper({show, children }:any) {
         {!show && (
           <Link
           href="/"
-          className={`flex items-center text-2xl font-bold ${
-            theme === "dark" ? "dark:text-white" : theme === "light" ? "text-white" : "text-black"
-          }`}
+          className={`flex items-center text-2xl font-bold `}
         >
-        {/* Scholarly */}
         <span
-            className={`text-sm font-bold group ml-1 mt-2 inline-block rounded-3xl  px-6 py-2 ${
-              theme === "dark" ? "bg-white dark:text-black" : theme === "light" ? "bg-black" : "dark:text-black dark:bg-white"
-            }`}
+            className={`text-sm font-bold group ml-1 mt-2 inline-block rounded-3xl px-6 py-2 transition ease-in-out hover:bg-gray-800 dark:hover:bg-gray-200 bg-black border border-white text-white dark:bg-[#fafafa] dark:text-black `}
           >
-          <span className="">.LLAMA</span>
+          .LLAMA
         </span>
       </Link>
         )}
@@ -77,23 +70,17 @@ export default function Wrapper({show, children }:any) {
           <>
             <Link href={previousPage as string} passHref>
             <Button
-            disabled
-            className={`text-sm font-bold rounded-3xl ${
-            theme === "light" ? "bg-black-900 text-black dark:bg-zinc-800 dark:text-zinc-400" : ""
-            } px-7 py-2 hover:bg-[#FFC107] ${
-            theme === "dark" || theme === "system" ? "dark:hover:bg-zinc-900" : ""
-            }`}
+            // disabled
+            className={`text-sm font-bold rounded-3xl hover:bg-gray-600 bg-gray-500 dark:bg-gray-500  `}
             >
-              <span className={theme === "light" ? "text-white" : ""}>Back</span>
-              </Button>
+             Back
+            </Button>
             </Link>
             <div
-              className={`text-xs font-bold py-2 group-hover:bg-[#e1ffe1c5] ${
-                theme === "dark" ? "dark:text-white" : theme === "system" ? "text-white" : "text-black"
-              }`}
+              className={`text-xs font-bold py-2 group-hover:bg-[#e1ffe1c5] text-black dark:text-white `}
             >
-              <p className="text-xs">
-                <span className="inline-block">
+              <p className="text-xs ">
+                <span className="inline-block ">
                   {pathname === activeSection?.href ? activeSection.label : null}
                 </span>
                 <span className="inline-block px-3 opacity-50">/</span>
@@ -104,11 +91,9 @@ export default function Wrapper({show, children }:any) {
             </div>
             <Link href={nextPage as string} passHref>
               <Button
-                className={`text-sm px-7 py-2 bg-[#FFD700] font-bold rounded-3xl ${
-                  theme === "dark" || theme === "system" ? "bg-[#4CAF50] text-white dark:bg-white px-7 py-2 dark:text-black" : "bg-[#FFD700] text-black"
-                }`}
+                className={`text-sm px-7 py-2 bg-[#FFD700] hover:bg-yellow-400 dark:hover:bg-green-600 text-[#333] dark:text-white dark:bg-[#4CAF50] font-bold rounded-3xl `}
               >
-                <span className={theme === "light" ? "text-black" : ""}>Next</span>
+              Next
               </Button>
             </Link>
           </>
