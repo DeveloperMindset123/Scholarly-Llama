@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/initSupabase';
 import { useAuth } from '@/components/authProvider';
 import Layout, { useBooks } from '@/components/dashboard/layout';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
 export default function Page() {
@@ -19,7 +20,7 @@ export default function Page() {
   const [ready,setReady] = useState<any>(false);
   const [text, setText] = useState<string>('Hi, upload your textbook!');
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<any>(null);
   const {user} = useAuth();
   const { setBooks, setActiveChat, activeChat} = useBooks();
   const [messageState, setMessageState] = useState<{
@@ -118,13 +119,9 @@ export default function Page() {
         .select()
     
       if(!bookData){
-          console.error(bookError)
+          setError(bookError)
           return;
       }
-      
-      setBookNamespace(bookData[0].namespace)
-      console.log(bookData[0].namespace)
-      setActiveChat(bookData[0].namespace)
         
         const { data, error } = await supabase.storage
           .from('pdfs')
@@ -133,9 +130,17 @@ export default function Page() {
           });
         
         if (error) {
-          console.error('Error uploading PDF to Supabase:', error);
+          const {data:deleteData, error:deleteError} = await supabase
+          .from('books')
+          .delete()
+          .eq('namespace', bookData[0].namespace)
+          setError(error.message);
           return;
         }
+
+        setBookNamespace(bookData[0].namespace)
+        console.log(bookData[0].namespace)
+        setActiveChat(bookData[0].namespace)
 
         const ingestResponse = await fetch('/api/ingestpines',{
           method: 'POST',
@@ -404,7 +409,7 @@ export default function Page() {
                           </ReactMarkdown>
                         </div>
                       </div>
-                      {/* {message.sourceDocs && (
+                      {message.sourceDocs && (
                         <div
                           className="p-5"
                           key={`sourceDocsAccordion-${index}`}
@@ -433,7 +438,7 @@ export default function Page() {
                             ))}
                           </Accordion>
                         </div>
-                      )} */}
+                      )}
                     </>
                   );
                 })}
