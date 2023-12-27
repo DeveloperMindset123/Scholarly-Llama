@@ -13,9 +13,7 @@ export default function IntroSection({number, text}:any) {
               {text}
             </p>
 
-            <div className="">
               <DashboardButton/>
-            </div>
           </div>
         </Wrapper>
       </section>

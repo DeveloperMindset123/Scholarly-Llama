@@ -9,8 +9,6 @@ import { useTheme } from "next-themes";
 import IntroSection from "@/components/introSection";
 
 export default function Home() {
-  const { theme } = useTheme();  //needed to add this so that I can use the conditional statement
-
   return (
     <section className="flex flex-col lg:flex-row">
       <IntroSection number={"02"} text={"Upload your textbooks and pose any question you have in mind. Our Llama is ready to provide instant, comprehensive answers, ensuring you grasp every concept at your own pace."}/>

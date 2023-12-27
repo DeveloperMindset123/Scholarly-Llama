@@ -22,7 +22,7 @@ export default function ThemeToggle() {
   };
 
   return (
-    <div className={`flex border items-center p-2 px-4 w- justify-between rounded-full ${theme === 'dark' ? 'bg-[#111] shadow' : 'bg-[#fafafa] shadow-dark'}`}>
+    <div className={`flex border items-center p-2 px-4  justify-between rounded-full bg-[#fafafa] dark:border-none dark:bg-black`}>
       <button
         className={`mr-2 p-1 dark:text-zinc-500 text-zinc-700 ${
           theme === "system"
@@ -46,7 +46,7 @@ export default function ThemeToggle() {
       <button
         className={`mr-2 p-1 dark:text-zinc-500 text-zinc-700 ${
           theme === "light"
-            ? "bg-[#333] text-zinc-50 rounded-full shadow-xl"
+            ? "bg-white dark:bg-[#333] text-zinc-50 rounded-full shadow-xl"
             : ""
         }`}
         onClick={() => handleThemeChange("light")}
