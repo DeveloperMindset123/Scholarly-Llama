@@ -17,7 +17,7 @@ export default function DashboardButton() {
           await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-              redirectTo: '/dashboard',
+              redirectTo: 'https://scholarly-llama.vercel.app/dashboard',
               queryParams: {
                 prompt: 'consent',
               },
