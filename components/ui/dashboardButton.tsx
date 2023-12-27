@@ -18,7 +18,7 @@ export default function DashboardButton(){
                 SignInWithGoogle()
                }
             }}>
-                <span className={theme === "dark" ? "dark:text-black" : theme === "system" ? "text-white" : "text-black"}>
+                <span className="text-black dark:text-white">
                 Get Started
             </span>
             </Button>

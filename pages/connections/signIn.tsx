@@ -17,8 +17,5 @@ export default async function SignInWithGoogle() {
           },    
       },
     });
-
-
-    alert(data)
     
   }
