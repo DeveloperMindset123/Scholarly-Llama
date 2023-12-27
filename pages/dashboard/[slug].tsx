@@ -7,8 +7,6 @@ import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
 import { supabase } from '@/lib/initSupabase';
-import { useParams } from 'next/navigation';
-import { useAuth } from '@/components/authProvider';
 import Layout, { useBooks } from '@/components/dashboard/layout';
 import {
   Accordion,

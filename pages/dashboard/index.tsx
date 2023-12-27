@@ -1,11 +1,9 @@
 'use client';
-import { useRouter } from 'next/router';
 import {
   useRef,
   useState,
   useEffect,
   useLayoutEffect,
-  useContext,
 } from 'react';
 import styles from '@/styles/Home.module.css';
 import { Message } from '@/types/chat';
@@ -13,7 +11,6 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
-import { createClient } from '@supabase/supabase-js';
 import { supabase } from '@/lib/initSupabase';
 import { useAuth } from '@/components/authProvider';
 import Layout, { useBooks } from '@/components/dashboard/layout';

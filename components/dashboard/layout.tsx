@@ -5,7 +5,7 @@ import Wrapper from '../wrapper';
 import { supabase } from '@/lib/initSupabase';
 import { useState, useEffect } from 'react';
 import { createContext, useContext } from 'react';
-import Styles from '@/styles/home.module.css';
+import styles from '@/styles/Home.module.css';
 import { useAuth } from '../authProvider';
 
 const BooksContext = createContext<any>(null);
@@ -43,7 +43,7 @@ export default function Layout({ children }: any) {
         </Link>
 
         <div
-          className={`${Styles.hideScrollbar} pr-2  h-[88%] overflow-y-scroll overflow-x-hidden`}
+          className={`${styles.hideScrollbar} pr-2  h-[88%] overflow-y-scroll overflow-x-hidden`}
         >
           <div
             className={`pt-10   text-black w-[100%] flex-col  text-clip whitespace-nowrap  overflow-x-hidden text-sm `}

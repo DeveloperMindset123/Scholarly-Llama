@@ -1,9 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Wrapper from '@/components/wrapper';
-import { Button } from '@/components/ui/button';
-import DashboardButton from '@/components/ui/dashboardButton';
 import robot from '@/public/bot-image.png';
 import IntroSection from '@/components/introSection';
 
