@@ -2,10 +2,9 @@ import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/initSupabase';
 import { useRouter } from 'next/router';
 
-
 const AuthContext = createContext<any>(null);
 
-export const AuthProvider = ({ children }:any) => {
+export const AuthProvider = ({ children }: any) => {
   const [isAuthenticated, setAuthenticated] = useState<any>(false);
   const [user, setUser] = useState<any>(null);
   const [isLoading, setLoading] = useState(true);
@@ -19,7 +18,7 @@ export const AuthProvider = ({ children }:any) => {
     } catch (error) {
       console.error('Error checking user:', error);
     } finally {
-        console.log('setting loading false')
+      console.log('setting loading false');
       setLoading(false);
     }
   };
@@ -31,23 +30,18 @@ export const AuthProvider = ({ children }:any) => {
       setUser(session?.user || null);
     });
   }, []);
-  
 
   const value = useMemo(
     () => ({
-        isAuthenticated,
-        user,
-        isLoading,
-        checkUser
+      isAuthenticated,
+      user,
+      isLoading,
+      checkUser,
     }),
-    [user, isLoading, isAuthenticated]
+    [user, isLoading, isAuthenticated],
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

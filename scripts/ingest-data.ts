@@ -9,7 +9,7 @@ import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
 /* Name of directory to retrieve your files from 
    Make sure to add your PDF files inside the 'docs' folder
 */
-const filePath = 'docs';  
+const filePath = 'docs';
 
 export const run = async () => {
   try {
@@ -33,7 +33,7 @@ export const run = async () => {
     console.log('creating vector store...');
     /*create and store the embeddings in the vectorStore*/
     const embeddings = new OpenAIEmbeddings();
-    console.log('test...');  //I hope this fixes the issues
+    console.log('test...'); //I hope this fixes the issues
     const index = pinecone.Index(PINECONE_INDEX_NAME); //change to your own index name
 
     //embed the PDF documents

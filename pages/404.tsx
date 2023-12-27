@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import React from "react";
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import React from 'react';
 
 export default function NotFound() {
   return (
@@ -10,9 +10,11 @@ export default function NotFound() {
       </p>
       <div className="w-full mx-auto max-w-lg mt-8 md:mt-0">
         <Button size="xl" className="w-full font-bold" variant="brand">
-          <Link href="/" className="pb-1 dark:text-zinc-800 text-zinc-100">  {/*ensure that the link it directs to is set to the login page */}
+          <Link href="/" className="pb-1 dark:text-zinc-800 text-zinc-100">
+            {' '}
+            {/*ensure that the link it directs to is set to the login page */}
             Take me 🏡 home!
-          </Link>{" "}
+          </Link>{' '}
         </Button>
       </div>
     </div>

@@ -61,7 +61,6 @@ export default async function handler(
       })
       .join('\n');
 
-
     //Ask a question using chat history
     const response = await chain.invoke({
       question: sanitizedQuestion,

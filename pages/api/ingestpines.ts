@@ -4,11 +4,13 @@ import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME } from '@/config/pinecone';
-import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
+import { WebPDFLoader } from 'langchain/document_loaders/web/pdf';
 import { CustomPDFLoader } from '@/utils/customPDFLoader';
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "");
-export default async function handler(req:any, res:any) {
-
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+);
+export default async function handler(req: any, res: any) {
   try {
     const PINECONE_NAME_SPACE = req.body.bookNamespace;
     const { data, error } = await supabase.storage
@@ -17,7 +19,12 @@ export default async function handler(req:any, res:any) {
 
     if (error) {
       console.error('Error downloading PDF from Supabase:', error);
-      return res.status(500).json({ success: false, error: 'Failed to download PDF from Supabase' });
+      return res
+        .status(500)
+        .json({
+          success: false,
+          error: 'Failed to download PDF from Supabase',
+        });
     }
 
     const loader = new CustomPDFLoader(data);
@@ -50,5 +57,4 @@ export default async function handler(req:any, res:any) {
     console.error('Ingestion error:', error);
     res.status(500).json({ success: false, error: 'Failed to ingest data' });
   }
-
 }
