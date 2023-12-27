@@ -9,7 +9,7 @@ import {v4} from 'uuid';
 
 
 
-const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME || 'scholar-llama';
+export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME || 'scholar-llama';
 
 
-export { PINECONE_INDEX_NAME };
+//export { PINECONE_INDEX_NAME };

@@ -19,6 +19,6 @@ export default async function SignInWithGoogle() {
     });
 
 
-    alert(data)
+    //console.log(data);  
     
   }

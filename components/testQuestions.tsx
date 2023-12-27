@@ -17,6 +17,6 @@ export const TestQuestions: React.FC<TestQuestionsProps> = ({ questions }) => {
             </ol>
         </div>
     )
-}
+}   
 
 //test this component with a sample test questions and check if the page rendered as intended

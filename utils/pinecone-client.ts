@@ -19,3 +19,9 @@ async function initPinecone() {
 }
 
 export const pinecone = await initPinecone();
+
+
+/**Summary of the above file:
+ * 
+ * Initiallizes a pincecone client, which is a vector search engine used for semantic search operations. The client is set up with environment variables for the Pinecone Environment and API key
+ */

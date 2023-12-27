@@ -52,3 +52,9 @@ export default async function handler(req:any, res:any) {
   }
 
 }
+
+
+/**Summary of the above file:
+ * 
+ * A server-side handler in next.js that downloads a PDF from Supabase storage, processes it to create a vector embeddings of its contents using the OpenAI embeddings API, and stores these embeddings in a pinecone index This enables semantic searching of the PDF contents.
+ */

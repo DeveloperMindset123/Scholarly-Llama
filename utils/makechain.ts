@@ -86,3 +86,9 @@ export const makeChain = (retriever: VectorStoreRetriever) => {
 
   return conversationalRetrievalQAChain;
 };
+
+
+/**Note from Ayan (to summarize the purpose of this file) "
+ * 
+ * Contains the logic to create a chain of operations that involve rephrasing a question to be standalone (using the 'condesneQuestionPrompt') and generating an answer to a question based on provided context and chat history (using the 'answerPrompt'). This would be used in generating and checking test questions against a context (like a book or a PDF content)
+*/
