@@ -19,7 +19,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const {user} = useAuth();
   const router = useRouter()
-  const {activeChat, setActiveChat} = useBooks();
+  const {activeChat, setActiveChat, books, loading:loadingBooks} = useBooks();
   const [messageState, setMessageState] = useState<{
     messages: Message[];
     pending?: string;
@@ -37,11 +37,25 @@ export default function Page() {
 
   useEffect(()=>{
     (async () => {
+
+      if(loadingBooks || books.length == 0 || !router.query.slug){
+        return
+      }
+
+      const filteredArray = books.filter((e:any)=>{
+        return e.namespace == `${router.query.slug}`
+      })
+
+      if(filteredArray.length == 0){
+        router.push('/404')
+        return
+      }
+
         const { data, error } = await supabase
         .from('messages')
         .select(' message, type, book_namespace')
         .eq('book_namespace', `${router.query.slug}`)
-        
+
         setBookNamespace(`${router.query.slug}`);
         setActiveChat(`${router.query.slug}`)
 
@@ -68,7 +82,7 @@ export default function Page() {
         setLoading(false);
     })()
    
-  },[router.query.slug, router, setActiveChat])
+  },[router.query.slug, router, setActiveChat, books, loadingBooks])
 
 
   const { messages, history } = messageState;
