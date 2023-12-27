@@ -5,15 +5,17 @@ import Wrapper from "@/components/wrapper";
 import { Button } from "@/components/ui/button";
 import DashboardButton  from "@/components/ui/dashboardButton"
 import boyAndGirl from "@/public/coolLlama.png";
+import { useTheme } from "next-themes";
 
 export default function Home() {
+    const { theme } = useTheme(); 
   return (
     <section className="flex flex-col lg:flex-row">
       <section className="flex h-screen w-full flex-col justify-between p-9 lg:h-auto">
         <Wrapper>
           <div className="mx-auto flex max-w-sm flex-col justify-between">
             <span
-              className={`-mt-14 inline-block text-[64px] font-bold text-black dark:text-white`}
+              className={`-mt-14 inline-block text-[64px] font-bold ${theme === "dark" ? "dark:text-white" : theme === "system" ? "text-white" : "text-black"}`}
             >
               03
             </span>

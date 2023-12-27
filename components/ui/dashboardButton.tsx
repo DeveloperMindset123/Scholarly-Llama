@@ -4,14 +4,21 @@ import { toast } from 'react-toastify';
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { redirect } from "next/dist/server/api-utils";
+import { useAuth } from "../authProvider";
+import { useRouter } from "next/router";
 export default function DashboardButton(){
+    const {isAuthenticated} = useAuth();
+    const router = useRouter();
     const { theme } = useTheme();
     return(
             <Button size="xl" className="w-full font-bold" variant="brand" onClick={() => {
-                // toastNotification({title: 'Redirecting...'})
+               if(isAuthenticated){
+                router.push('/dashboard')
+               }else{
                 SignInWithGoogle()
+               }
             }}>
-                <span className={theme === "dark" ? "dark:bg-white" : theme === "light" ? "bg-gray-700 px-15 py-5 rounded-md  text-black" : "text-black"}>
+                <span className={theme === "dark" ? "dark:text-black" : theme === "system" ? "text-white" : "text-black"}>
                 Get Started
             </span>
             </Button>

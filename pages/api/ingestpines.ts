@@ -10,7 +10,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || "", proces
 export default async function handler(req:any, res:any) {
 
   try {
-    const PINECONE_NAME_SPACE = req.body.PINECONE_NAME_SPACE;
+    const PINECONE_NAME_SPACE = req.body.bookNamespace;
     const { data, error } = await supabase.storage
       .from('pdfs')
       .download(`public/${PINECONE_NAME_SPACE}.pdf`);
@@ -37,6 +37,7 @@ export default async function handler(req:any, res:any) {
     // // Create and store the embeddings in the vectorStore
     const embeddings = new OpenAIEmbeddings();
     const index = pinecone.Index(PINECONE_INDEX_NAME); // change to your own index name;
+
     // // Embed the PDF documents
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,
