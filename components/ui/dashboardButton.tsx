@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import SignInWithGoogle from '@/pages/connections/signIn';
+import { supabase } from 'lib/initSupabase';
 import { useAuth } from '../authProvider';
 import { useRouter } from 'next/router';
 export default function DashboardButton() {
@@ -10,11 +10,19 @@ export default function DashboardButton() {
       size="xl"
       className="w-full font-bold "
       variant="brand"
-      onClick={() => {
+      onClick={async() => {
         if (isAuthenticated) {
           router.push('/dashboard');
         } else {
-          SignInWithGoogle();
+          await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: 'http://localhost:3000/dashboard',
+              queryParams: {
+                prompt: 'consent',
+              },
+            },
+          });
         }
       }}
     >
