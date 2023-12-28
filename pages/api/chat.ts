@@ -69,7 +69,6 @@ export default async function handler(
     const sourceDocuments = await documentPromise;
     // 
 
-    console.log('response', response);
     res.status(200).json({ text: response, sourceDocuments });
   } catch (error: any) {
     console.log('error', error);
