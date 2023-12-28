@@ -1,10 +1,5 @@
 'use client';
-import {
-  useRef,
-  useState,
-  useEffect,
-  useLayoutEffect,
-} from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import styles from '@/styles/Home.module.css';
 import { Message } from '@/types/chat';
 import Image from 'next/image';
@@ -110,7 +105,7 @@ export default function Page() {
           }));
         }, 2000);
 
-        console.log('hi')
+        console.log('hi');
 
         const { data: bookData, error: bookError } = await supabase
           .from('books')
@@ -155,8 +150,7 @@ export default function Page() {
         } else {
           setError(pdfProcessData.error);
           return;
-        } 
-
+        }
 
         setBookNamespace(bookData[0].namespace);
         setActiveChat(bookData[0].namespace);
@@ -171,13 +165,11 @@ export default function Page() {
 
         setBooks((state: any) => [bookData[0], ...state]);
 
-        await supabase
-          .from('messages')
-          .insert({
-            message: 'Thank you! Let me process this.',
-            type: 'apiMessage',
-            book_namespace: bookData[0].namespace,
-          });
+        await supabase.from('messages').insert({
+          message: 'Thank you! Let me process this.',
+          type: 'apiMessage',
+          book_namespace: bookData[0].namespace,
+        });
 
         setMessageState((state) => ({
           ...state,
@@ -190,13 +182,11 @@ export default function Page() {
           ],
         }));
 
-        await supabase
-          .from('messages')
-          .insert({
-            message: 'About the book, What should I know of the context?',
-            type: 'userMessage',
-            book_namespace: bookData[0].namespace,
-          });
+        await supabase.from('messages').insert({
+          message: 'About the book, What should I know of the context?',
+          type: 'userMessage',
+          book_namespace: bookData[0].namespace,
+        });
 
         try {
           const response = await fetch('/api/chat', {
@@ -233,13 +223,11 @@ export default function Page() {
               ],
             }));
 
-            await supabase
-              .from('messages')
-              .insert({
-                message: data.text,
-                type: 'apiMessage',
-                book_namespace: bookData[0].namespace,
-              });
+            await supabase.from('messages').insert({
+              message: data.text,
+              type: 'apiMessage',
+              book_namespace: bookData[0].namespace,
+            });
           }
 
           setLoading(false);
@@ -302,13 +290,11 @@ export default function Page() {
       ],
     }));
 
-    await supabase
-      .from('messages')
-      .insert({
-        message: question,
-        type: 'userMessage',
-        book_namespace: bookNamespace,
-      });
+    await supabase.from('messages').insert({
+      message: question,
+      type: 'userMessage',
+      book_namespace: bookNamespace,
+    });
 
     setLoading(true);
     textAreaRef.current.value = '';
@@ -342,13 +328,11 @@ export default function Page() {
           history: [...state.history, [question, data.text]],
         }));
 
-        await supabase
-          .from('messages')
-          .insert({
-            message: data.text,
-            type: 'apiMessage',
-            book_namespace: bookNamespace,
-          });
+        await supabase.from('messages').insert({
+          message: data.text,
+          type: 'apiMessage',
+          book_namespace: bookNamespace,
+        });
       }
 
       setLoading(false);
@@ -423,7 +407,6 @@ export default function Page() {
                         </ReactMarkdown>
                       </div>
                     </div>
-                    
                   </>
                 );
               })}
