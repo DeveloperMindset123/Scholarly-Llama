@@ -66,10 +66,20 @@ export default function Page() {
         return;
       }
 
+      const updatedHistory:any = [];
+      for (let i = 0; i < data.length; i += 2) {
+          if (data[i] && data[i + 1]) {
+              updatedHistory.push([
+                  data[i].message,  
+                  data[i + 1].message
+              ]);
+          }
+      }
+
       setMessageState((state) => ({
         ...state,
         messages: data,
-        history: [...state.history, data[data.length - 1].message],
+        history: updatedHistory, 
       }));
 
       setLoading(false);
@@ -149,7 +159,7 @@ export default function Page() {
         }),
       });
       const data = await response.json();
-
+      console.log(data.sourceDocuments)
       if (data.error) {
         setError(data.error);
       } else {

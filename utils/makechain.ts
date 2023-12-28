@@ -14,8 +14,9 @@ const CONDENSE_TEMPLATE = `Given the following conversation and a follow up ques
 Follow Up Input: {question}
 Standalone question:`;
 
-const QA_TEMPLATE = `You are a AI with immense knowledge on the given context which is a book. Use the following pieces of context from the book to try to answer the question at the end. 
-If specific context or chat history is not provided or if you are unsure, try to infer based on the general context. 
+const QA_TEMPLATE = `You are a researcher with immense knowledge on the given context which is a book. Use the following pieces of context from the book to try to answer the question at the end. 
+If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context. DO NOT try to guess.
+For example, if the question is general and includes generalized text, you should respond with a general answer. If the question is specific and related to the context, you should respond with a specific answer based on the context.
 
 <context>
   {context}
@@ -27,6 +28,11 @@ If specific context or chat history is not provided or if you are unsure, try to
 
 Question: {question}
 Helpful answer in markdown, and readable format:`;
+
+
+// Then check the outputs and see if the model is even working
+// Finally see what the logic actually is and where and how you can improve it
+// Include generalized model so it can function otherwise
 
 //
 // If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context.
@@ -42,8 +48,8 @@ export const makeChain = (retriever: VectorStoreRetriever) => {
   const answerPrompt = ChatPromptTemplate.fromTemplate(QA_TEMPLATE);
 
   const model = new ChatOpenAI({
-    temperature: 0.0, // increase temperature to get more creative answers
-    modelName: 'gpt-3.5-turbo', //change this to gpt-4 if you have access
+    temperature: 0.5, // increase temperature to get more creative answers
+    modelName: 'gpt-4', //change this to gpt-4 if you have access
   });
 
   // Rephrase the initial question into a dereferenced standalone question based on
@@ -53,6 +59,7 @@ export const makeChain = (retriever: VectorStoreRetriever) => {
     model,
     new StringOutputParser(),
   ]);
+
 
   // Retrieve documents based on a query, then format them.
   const retrievalChain = retriever.pipe(combineDocumentsFn);
