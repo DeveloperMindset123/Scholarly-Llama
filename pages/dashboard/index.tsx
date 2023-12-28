@@ -110,6 +110,8 @@ export default function Page() {
           }));
         }, 2000);
 
+        console.log('hi')
+
         const { data: bookData, error: bookError } = await supabase
           .from('books')
           .insert([{ title: pdf.name, user_id: user.id }])
@@ -135,8 +137,6 @@ export default function Page() {
           return;
         }
 
-
-        console.log('boutta call api')
         const pdfProcessResponse = await fetch('/api/processPdf', {
           method: 'POST',
           headers: {
@@ -149,25 +149,13 @@ export default function Page() {
 
         const pdfProcessData = await pdfProcessResponse.json();
 
-        const ingestResponse = await fetch('/api/ingestData', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docs: pdfProcessData.docs,
-          }),
-        });
-
-        const ingestData = await ingestResponse.json();
-
-        if (pdfProcessData && ingestData.success) {
+        if (pdfProcessData.success) {
           setReady(true);
-          console.log('PDF uploaded and ingested successfully');
+          console.log('PDF uploaded successfully & Ingested');
         } else {
-          console.error('Ingestion failed:', ingestData.error);
+          setError(pdfProcessData.error);
           return;
-        }
+        } 
 
 
         setBookNamespace(bookData[0].namespace);
