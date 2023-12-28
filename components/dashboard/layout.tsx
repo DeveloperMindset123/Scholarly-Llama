@@ -18,9 +18,9 @@ export default function Layout({ children }: any) {
   useEffect(() => {
     (async () => {
       const { data, error } = await supabase
-      .from('books')
-      .select()
-      .eq('user_id', `${user.id}`)
+        .from('books')
+        .select()
+        .eq('user_id', `${user.id}`);
       data?.reverse();
       setBooks(data);
       setLoading(false);

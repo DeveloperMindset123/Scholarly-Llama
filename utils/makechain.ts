@@ -29,7 +29,6 @@ For example, if the question is general and includes generalized text, you shoul
 Question: {question}
 Helpful answer in markdown, and readable format:`;
 
-
 // Then check the outputs and see if the model is even working
 // Finally see what the logic actually is and where and how you can improve it
 // Include generalized model so it can function otherwise
@@ -59,7 +58,6 @@ export const makeChain = (retriever: VectorStoreRetriever) => {
     model,
     new StringOutputParser(),
   ]);
-
 
   // Retrieve documents based on a query, then format them.
   const retrievalChain = retriever.pipe(combineDocumentsFn);

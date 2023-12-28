@@ -66,20 +66,17 @@ export default function Page() {
         return;
       }
 
-      const updatedHistory:any = [];
+      const updatedHistory: any = [];
       for (let i = 0; i < data.length; i += 2) {
-          if (data[i] && data[i + 1]) {
-              updatedHistory.push([
-                  data[i].message,  
-                  data[i + 1].message
-              ]);
-          }
+        if (data[i] && data[i + 1]) {
+          updatedHistory.push([data[i].message, data[i + 1].message]);
+        }
       }
 
       setMessageState((state) => ({
         ...state,
         messages: data,
-        history: updatedHistory, 
+        history: updatedHistory,
       }));
 
       setLoading(false);
@@ -135,13 +132,11 @@ export default function Page() {
       ],
     }));
 
-    await supabase
-      .from('messages')
-      .insert({
-        message: question,
-        type: 'userMessage',
-        book_namespace: bookNamespace,
-      });
+    await supabase.from('messages').insert({
+      message: question,
+      type: 'userMessage',
+      book_namespace: bookNamespace,
+    });
 
     setLoading(true);
     textAreaRef.current.value = '';
@@ -159,7 +154,7 @@ export default function Page() {
         }),
       });
       const data = await response.json();
-      console.log(data.sourceDocuments)
+      console.log(data.sourceDocuments);
       if (data.error) {
         setError(data.error);
       } else {
@@ -175,13 +170,11 @@ export default function Page() {
           history: [...state.history, [question, data.text]],
         }));
 
-        await supabase
-          .from('messages')
-          .insert({
-            message: data.text,
-            type: 'apiMessage',
-            book_namespace: bookNamespace,
-          });
+        await supabase.from('messages').insert({
+          message: data.text,
+          type: 'apiMessage',
+          book_namespace: bookNamespace,
+        });
       }
 
       setLoading(false);
@@ -256,7 +249,6 @@ export default function Page() {
                         </ReactMarkdown>
                       </div>
                     </div>
-                    
                   </>
                 );
               })}

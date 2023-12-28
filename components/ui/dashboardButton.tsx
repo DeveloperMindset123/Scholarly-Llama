@@ -10,7 +10,7 @@ export default function DashboardButton() {
       size="xl"
       className="w-full font-bold "
       variant="brand"
-      onClick={async() => {
+      onClick={async () => {
         if (isAuthenticated) {
           router.push('/dashboard');
         } else {

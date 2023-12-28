@@ -8,7 +8,6 @@ import { supabase } from '@/lib/initSupabase';
 
 export default async function handler(req: any, res: any) {
   try {
-
     const PINECONE_INDEX_NAME = 'scholar-llama';
     const PINECONE_NAME_SPACE = req.body.bookNamespace;
 
@@ -18,12 +17,10 @@ export default async function handler(req: any, res: any) {
 
     if (error) {
       console.error('Error downloading PDF from Supabase:', error);
-      return res
-        .status(500)
-        .json({
-          success: false,
-          error: 'Failed to download PDF from Supabase',
-        });
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to download PDF from Supabase',
+      });
     }
 
     const loader = new CustomPDFLoader(data);
