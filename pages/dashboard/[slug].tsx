@@ -46,9 +46,6 @@ export default function Page() {
         .order('created_at', { ascending: false })
         .limit(30);
 
-      if (data) {
-        console.log(data[data.length - 1]);
-      }
       data?.reverse();
 
       setBookNamespace(`${router.query.slug}`);

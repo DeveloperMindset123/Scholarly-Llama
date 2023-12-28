@@ -15,16 +15,17 @@ export default function Layout({ children }: any) {
   const [loading, setLoading] = useState<boolean>(true);
   const [activeChat, setActiveChat] = useState<any>('');
   const { user } = useAuth();
-
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase.from('books').select();
-
+      const { data, error } = await supabase
+      .from('books')
+      .select()
+      .eq('user_id', `${user.id}`)
       data?.reverse();
       setBooks(data);
       setLoading(false);
     })();
-  }, []);
+  }, [user.id]);
 
   return (
     <BooksContext.Provider
