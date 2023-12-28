@@ -5,47 +5,134 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PINECONE_INDEX_NAME } from "@/config/pinecone";
 import { makeChain } from "@/utils/makechain";
 import { pinecone } from "@/utils/pinecone-client";  //initializes pinecone, as defined in pinecone-client.ts
+import { CustomPDFLoader } from "@/utils/customPDFLoader";
+import { VectorStoreRetriever } from "langchain/vectorstores/base";
 
-//I will set up my own GPT AI then
+/**
+ * Outline in regards to what needs to be done here:
+ * 1. Retrieve the most recent PDF from supabase
+ * 2. Parse the PDF to extract its text
+ * 3. Use a language model to generate questions from the text
+ */
 
-//define the Index and get the appropariate stats
-const PINECONE_INDEX_NAME = req.body.bookNamespace || 'scholar-llama';  //note that this is the name of our Pinecone index
-const index = pinecone.index(PINECONE_INDEX_NAME);  //changed from vectorStore to index clarity to correspond with the documentation
-//Note: To get  a list of namespaces for a given index, you can use DescribeIndexStats which will return a list of namespaces and number of vectors in each namespace
-const stats = await index.describeIndexStats();
-const unique_namespaces = stats.namespaces;
 
-//before using the query value, fetch the ids --> the fetch operation looks up and returns vectors, by ID, from a single namespace, the returned vectors include the vector data and/or metadata
-const fetchResult = await index.fetch(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
-
-//once the result has been fetched, input it as a parameter within the query options
-
-//next, use the query operation to search by namespace and retrive the ids of the most similar items in a namespace, along with their similarity scores
-const queryResponse = await index.query({
-    topK: 10,
-    //it throws an error unless the vector has been specified
-    vector: fetchResult.records,
-  });
-  
-
-console.log(stats);  //find out what we get from here
-
-const namespace_list = ['cb2e278a-5ff8-4cd7-8a7d-6998e062432e', '9790aad9-6a55-44c6-b932-ad00e6019744', 'c7e21189-0c6e-49e2-9b11-4e523cff4d18', 'fbd4152d-ccc6-4235-80e6-ccb111294d48', 'cf18fd5a-7b7b-424e-8e1a-e49e45092979' ]  //placeholder for the namespcaes  on pinecone, this process needs to be automated, cannot manually add each time a new PDF gets uploaded
-
+// Let's say this function is supposed to be an API handler
 export default async function handler(
-    req: NextApiRequest,   //send the request
-    res: NextApiResponse,  //recieve the response
+    req: NextApiRequest, 
+    res: NextApiResponse
 ) {
-    //implement the try-catch handler
+    //esnure we are handling a post request
+    if (req.method !== 'POST') {
+        return res.status(405).end('Method not allowed');
+    }
+
     try {
+        //note, the code below attempts to manually load and process the pdf, however, I believe it would be better for us to utilize the processPdf.ts function instead
+        //call process PDF to get the most recent PDF and process it
+        const processResponse = await fetch('/api/processPdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                //include any additional neccessary headers
+            },
+            body: JSON.stringify({
+                //include the neccessary body content
+                bookNamespace: req.body.bookNamespace,  //retrieve the book namespace
+                history: req.body.created_at,  //access the created at column
+            }),
+        });
 
-        //retrieve the vector embeddings from pinecone --> ensure to use the query in a namespace variable
-        
-        const vectors = await index.namespace({  //orginally stated queryVectors, will have to debug later
-            namespace: PINECONE_INDEX_NAME,
-            
+        const processData = await processResponse.json();  //process the resulting response
+        if (!processResponse.ok) {
+            throw new Error(processData.error || 'Failed to process PDF');
+        }
 
+        //Assuming processData contians the processed documents
+        const context = processData.docs.map(doc => doc.pageContent).join(' ');
+
+        //Initialize pinecone client and create a vectorStoreRetriever
+        const vectorStoreRetriever = new VectorStoreRetriever({
+            vectorStore: pinecone.index('scholar-llama').fetch();  // use the pinecone index name here
+        })
+        //use the context to generate questions with makechain
+        const chain = makeChain(vectorStoreRetriever);
+        const questions = await chain.run({
+            question: 'Generate 20 multiple-choice questions based on the following text:',
+            context: context,
+            chat_history: '', //leave it empty for now
         })
 
-    }
-}
+        //send the generated questions back to the client
+        res.status(200).json( { questions });
+
+        //I will comment out the remaining code of the try body for now
+        /*
+
+        //retrieve the most recent PDF from supabase --> use the timestamp column we will sort in descending order
+        const { data: pdfList, error: listError } = await supabase.storage.from('pdfs').list('', { sortBy: { column: 'created_at', order: 'desc' }});
+
+        if (listError || !pdfList || pdfList.length === 0) {
+            return res.status(500).json({ error: 'Failed to retrieve PDF list from supabase'});  //this will indicate the fetch was unsuccessful
+        }
+
+        //Assuming the most recent PDF is the first in the sorted list, we will need to download the most recent pdf after determining if it was successfully retrieved from supabase or not
+        const mostRecentPDF = pdfList[0];
+        const { data: pdfData, error: pdfError } = await supabase.storage.from('pdfs').download(mostRecentPDF.name);
+
+        if (pdfError || !pdfData) {
+            return res.status(500).json({ error: 'Failed to download PDF from supabase'})
+        }
+
+        //parse the PDF to extract text
+        const loader = new CustomPDFLoader(pdfData);
+        const loadedPdf = await loader.load();
+
+        //combine the text into a loaded pdf
+        const context = loadedPdf.map(doc => doc.pageContent).join(' ');
+
+        //Now you have your text from the PDF in loadedPDF
+        //You'd have to pass this to the model to generate questions
+        //Assuming makechain is set up to use a GPT model to generate questions
+        //const chain = makeChain(/**retriever setup, use own model to generate questions )
+        const questions = await chain.run({
+            //...parameters for GPT model call, including the loaded PDF text as context
+        });
+
+        //send the generated questions back to the client
+        res.status(200).json( {questions }); */
+    } catch(error: any) {
+        console.error('Error', error);
+        res.status(500).json( {error: error.message || 'Something went wrong'});  //either print the error message with the status code 500 or simply output 'Something went wrong' on the console
+    }}
+
+
+
+
+
+/*
+        // The namespace is typically known and should be provided as part of the request
+        // or through some other means of identifying which PDF's data you're working with.
+        const PINECONE_INDEX_NAME = req.body.bookNamespace || 'scholar-llama';
+
+        // Initialize the index
+        const index = pinecone.index(PINECONE_INDEX_NAME);
+
+        // DescribeIndexStats might be used if you need to get metadata about the namespaces
+        // For example, to verify that the namespace exists or to get the count of vectors
+        const stats = await index.describeIndexStats();
+        console.log(stats);
+
+        // If you have the IDs of the vectors you want to query, use fetch
+        // Here, I'm assuming you have a way of knowing these IDs
+        const vectorIDs = ['1', '2', '3', '4', '5']; // This should be dynamic based on your application logic
+        const fetchResult = await index.fetch(vectorIDs);
+
+       // Now you have your vectors either from fetchResult or queryResponse
+        // You can use these vectors as context for your GPT model to generate questions --> retrieve the vectors, use them as input on the GPT model
+
+        // ... (GPT-3 API call to generate questions using vectors as context)
+        res.status(200).json({ /* ...response with generated questions... });  //plcaeholder function at the moment
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ success: false, error: 'Failed to generate test questions' });
+    } */

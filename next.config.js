@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,  //is a development mode only feature for highlighting potential problems in an application. It helps to identify unsafe lifecycles legacy API usage, and a number of other features (according to the documentation)
+  reactStrictMode: true, //is a development mode only feature for highlighting potential problems in an application. It helps to identify unsafe lifecycles legacy API usage, and a number of other features (according to the documentation)
   swcMinify: true, //used for javascript minification
   webpack(config) {
     config.experiments = { ...config.experiments, topLevelAwait: true };
@@ -18,7 +18,6 @@ const nextConfig = {
     ]
   }
 */
-  
 };
 
 export default nextConfig;

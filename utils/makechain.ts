@@ -28,9 +28,8 @@ If specific context or chat history is not provided or if you are unsure, try to
 Question: {question}
 Helpful answer in markdown, and readable format:`;
 
-// 
+//
 // If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context.
-
 
 const combineDocumentsFn = (docs: Document[], separator = '\n\n') => {
   const serializedDocs = docs.map((doc) => doc.pageContent);
