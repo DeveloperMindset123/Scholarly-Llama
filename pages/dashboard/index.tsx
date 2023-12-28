@@ -9,9 +9,11 @@ import { Document } from 'langchain/document';
 import { supabase } from '@/lib/initSupabase';
 import { useAuth } from '@/components/authProvider';
 import Layout, { useBooks } from '@/components/dashboard/layout';
+import { useRouter } from 'next/router';
 
 export default function Page() {
   const [pdf, setPdf] = useState<any>(null);
+  const router = useRouter();
   const [bookNamespace, setBookNamespace] = useState<string>('');
   const [ready, setReady] = useState<any>(false);
   const [text, setText] = useState<string>('Hi, upload your textbook!');
@@ -132,6 +134,22 @@ export default function Page() {
           return;
         }
 
+        const { data: msgData, error: msgError } = await supabase
+        .from('messages')
+        .insert({
+          message: pdf.name,
+          type: 'userMessage',
+          book_namespace: bookData[0].namespace,
+        });
+
+      setBooks((state: any) => [bookData[0], ...state]);
+
+      await supabase.from('messages').insert({
+        message: 'Thank you! Let me process this.',
+        type: 'apiMessage',
+        book_namespace: bookData[0].namespace,
+      });
+
         const pdfProcessResponse = await fetch('/api/processPdf', {
           method: 'POST',
           headers: {
@@ -155,90 +173,30 @@ export default function Page() {
         setBookNamespace(bookData[0].namespace);
         setActiveChat(bookData[0].namespace);
 
-        const { data: msgData, error: msgError } = await supabase
-          .from('messages')
-          .insert({
-            message: pdf.name,
-            type: 'userMessage',
-            book_namespace: bookData[0].namespace,
-          });
+      setMessageState((state) => ({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
+            type: 'apiMessage',
+            message: 'What questions do you have?',
+          },
+        ],
+        history: [...state.history],
+      }));
 
-        setBooks((state: any) => [bookData[0], ...state]);
+      await supabase.from('messages').insert({
+        message: 'What questions do you have?',
+        type: 'apiMessage',
+        book_namespace: bookData[0].namespace,
+      });
 
-        await supabase.from('messages').insert({
-          message: 'Thank you! Let me process this.',
-          type: 'apiMessage',
-          book_namespace: bookData[0].namespace,
-        });
 
-        setMessageState((state) => ({
-          ...state,
-          messages: [
-            ...state.messages,
-            {
-              type: 'userMessage',
-              message: 'About the book, What should I know of the context?',
-            },
-          ],
-        }));
+    setTimeout(() => {
+      router.push(`/dashboard/${bookData[0].namespace}`);
+    },3000)
+    setLoading(false)
 
-        await supabase.from('messages').insert({
-          message: 'About the book, What should I know of the context?',
-          type: 'userMessage',
-          book_namespace: bookData[0].namespace,
-        });
-
-        try {
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              question: 'About the book, What should I know of the context?',
-              history,
-              bookNamespace: bookData[0].namespace,
-            }),
-          });
-          const data = await response.json();
-
-          if (data.error) {
-            setError(data.error);
-          } else {
-            setMessageState((state) => ({
-              ...state,
-              messages: [
-                ...state.messages,
-                {
-                  type: 'apiMessage',
-                  message: data.text,
-                },
-              ],
-              history: [
-                ...state.history,
-                [
-                  'About the book, What should I know of the context?',
-                  data.text,
-                ],
-              ],
-            }));
-
-            await supabase.from('messages').insert({
-              message: data.text,
-              type: 'apiMessage',
-              book_namespace: bookData[0].namespace,
-            });
-          }
-
-          setLoading(false);
-          //scroll to bottom
-        } catch (error) {
-          setLoading(false);
-          setError(
-            'An error occurred while fetching the data. Please try again.',
-          );
-          console.log('error', error);
-        }
       } catch (error) {
         setError('An error occurred while processing the file.');
         console.log('File Processing Error:', error);

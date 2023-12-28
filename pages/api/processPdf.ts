@@ -25,6 +25,8 @@ export default async function handler(req: any, res: any) {
 
     const loader = new CustomPDFLoader(data);
     const loadedPdf = await loader.load();
+    console.log(loadedPdf)
+    // the loaded process is different
 
     // // Split text into chunks
     const textSplitter = new RecursiveCharacterTextSplitter({
@@ -34,8 +36,22 @@ export default async function handler(req: any, res: any) {
 
     const docs = await textSplitter.splitDocuments(loadedPdf);
     console.log('split docs', docs);
+    console.log('split docs', docs);
 
-    res.status(200).json({ success: true, docs });
+    console.log('creating vector store...');
+    /*create and store the embeddings in the vectorStore*/
+    const embeddings = new OpenAIEmbeddings();
+
+    const index = pinecone.Index(PINECONE_INDEX_NAME); //change to your own index name
+
+    //embed the PDF documents
+    await PineconeStore.fromDocuments(docs, embeddings, {
+      pineconeIndex: index,
+      namespace: PINECONE_NAME_SPACE,
+      textKey: 'text',
+    });
+
+    res.status(200).json({ success: true });
   } catch (error) {
     console.error('Ingestion error:', error);
     res.status(500).json({ success: false, error: 'Failed to ingest data' });

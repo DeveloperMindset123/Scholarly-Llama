@@ -10,14 +10,14 @@ export default function DashboardButton() {
       size="xl"
       className="w-full font-bold "
       variant="brand"
-      onClick={async () => {
+      onClick={async() => {
         if (isAuthenticated) {
           router.push('/dashboard');
         } else {
           await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-              redirectTo: 'https://scholarly-llama.vercel.app/dashboard',
+              redirectTo: 'http://localhost:3000/dashboard',
               queryParams: {
                 prompt: 'consent',
               },

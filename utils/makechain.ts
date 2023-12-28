@@ -14,9 +14,9 @@ const CONDENSE_TEMPLATE = `Given the following conversation and a follow up ques
 Follow Up Input: {question}
 Standalone question:`;
 
-const QA_TEMPLATE = `You are a researcher with immense knowledge on the given context which is a book. Use the following pieces of context from the book to try to answer the question at the end. 
-If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context. DO NOT try to guess.
-For example, if the question is general and includes generalized text, you should respond with a general answer. If the question is specific and related to the context, you should respond with a specific answer based on the context.
+const QA_TEMPLATE = `You are an expert researcher. Use the following pieces of context to answer the question at the end.
+If you don't know the answer, just say you don't know. DO NOT try to make up an answer.
+If the question is not related to the context or chat history, politely respond that you are tuned to only answer questions that are related to the context.
 
 <context>
   {context}
@@ -47,7 +47,7 @@ export const makeChain = (retriever: VectorStoreRetriever) => {
   const answerPrompt = ChatPromptTemplate.fromTemplate(QA_TEMPLATE);
 
   const model = new ChatOpenAI({
-    temperature: 0.5, // increase temperature to get more creative answers
+    temperature: 0.3, // increase temperature to get more creative answers
     modelName: 'gpt-4', //change this to gpt-4 if you have access
   });
 

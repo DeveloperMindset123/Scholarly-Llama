@@ -154,7 +154,7 @@ export default function Page() {
         }),
       });
       const data = await response.json();
-      console.log(data.sourceDocuments);
+      // console.log(data.sourceDocuments);
       if (data.error) {
         setError(data.error);
       } else {
