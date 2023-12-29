@@ -44,7 +44,7 @@ export default function Layout({ children }: any) {
         </Link>
 
         <div
-          className={`${styles.hideScrollbar} pr-2  h-[88%] overflow-y-scroll overflow-x-hidden`}
+          className={`${styles.hideScrollbar} pr-2 h-[87vh]  overflow-y-scroll overflow-x-hidden`}
         >
           <div
             className={`pt-10   text-black w-[100%] flex-col  text-clip whitespace-nowrap  overflow-x-hidden text-sm `}
@@ -52,9 +52,9 @@ export default function Layout({ children }: any) {
             <Sidebar loading={loading} />
           </div>
         </div>
-        <div className="text-black dark:text-white text-sm  font-thin flex gap-[0.35rem] items-center h-14 w-full truncate">
+        <div className="text-black dark:text-white text-sm  font-thin flex gap-[0.35rem] justiy-center items-center h-[6vh] w-full truncate">
           <img
-            className="inline-block h-8 w-8 rounded-full ml-[0.35rem]"
+            className="h-[3.5vh] w-[3.5vh] rounded-full ml-[0.5rem]"
             src={user.user_metadata.avatar_url}
             alt=""
           />
