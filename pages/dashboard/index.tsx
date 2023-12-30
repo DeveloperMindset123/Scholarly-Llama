@@ -35,6 +35,7 @@ export default function Page() {
     history: [],
   });
 
+
   useEffect(() => {
     setActiveChat('');
   }, [setActiveChat]);
@@ -107,7 +108,6 @@ export default function Page() {
           }));
         }, 2000);
 
-        console.log('hi');
 
         const { data: bookData, error: bookError } = await supabase
           .from('books')
@@ -150,23 +150,26 @@ export default function Page() {
         book_namespace: bookData[0].namespace,
       });
 
-        const pdfProcessResponse = await fetch('/api/processPdf', {
+      
+        const pdfProcessResponse = await fetch('https://6og8a1e02b.execute-api.us-east-2.amazonaws.com/production/processPdfs', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             bookNamespace: bookData[0].namespace,
+            api: process.env.NEXT_PUBLIC_API_KEY
           }),
         });
 
         const pdfProcessData = await pdfProcessResponse.json();
 
-        if (pdfProcessData.success) {
+
+        if (pdfProcessData.statusCode == '200') {
           setReady(true);
           console.log('PDF uploaded successfully & Ingested');
         } else {
-          setError(pdfProcessData.error);
+          setError(pdfProcessData.body);
           return;
         }
 
