@@ -189,14 +189,23 @@ export default function Page() {
       }));
 
       await supabase.from('messages').insert({
+        message: 'Please wait 5 seconds for model intiation',
+        type: 'apiMessage',
+        book_namespace: bookData[0].namespace,
+      });
+
+
+      setTimeout(() => {
+        setLoading(false)
+      },5000)
+ 
+
+      await supabase.from('messages').insert({
         message: 'What questions do you have?',
         type: 'apiMessage',
         book_namespace: bookData[0].namespace,
       });
 
-      router.push(`/dashboard/${bookData[0].namespace}`);
-
-    setLoading(false)
 
       } catch (error) {
         setError('An error occurred while processing the file.');
@@ -255,7 +264,6 @@ export default function Page() {
       book_namespace: bookNamespace,
     });
 
-    console.log(bookNamespace)
     setLoading(true);
     textAreaRef.current.value = '';
 
