@@ -307,3 +307,5 @@ export default function Page() {
 Page.getLayout = function getLayout(page: any) {
   return <Layout>{page}</Layout>;
 };
+
+
