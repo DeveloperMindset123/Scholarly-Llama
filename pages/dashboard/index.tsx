@@ -194,10 +194,8 @@ export default function Page() {
         book_namespace: bookData[0].namespace,
       });
 
-
-    setTimeout(() => {
       router.push(`/dashboard/${bookData[0].namespace}`);
-    },3000)
+
     setLoading(false)
 
       } catch (error) {
@@ -257,6 +255,7 @@ export default function Page() {
       book_namespace: bookNamespace,
     });
 
+    console.log(bookNamespace)
     setLoading(true);
     textAreaRef.current.value = '';
 
