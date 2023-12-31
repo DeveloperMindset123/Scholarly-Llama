@@ -24,7 +24,10 @@ const TestPage: React.FC = () => {
                 }
 
                 const data = await response.json();
-                setTestQuestions(data.questions);
+                console.log(data.questions)
+                console.log(data.questions.kwargs.content)
+                console.log(data.questions.kwargs.content.trim().split(/(\d+\.)/))
+                setTestQuestions(data.questions.kwargs.content.trim().split(/(\d+\.)/));
             } catch (error) {
                 console.error("Error fetching questions:", error);
             } finally {
@@ -42,7 +45,9 @@ const TestPage: React.FC = () => {
     return (
         <div>
             <h1>Test Page</h1>
-            <TestQuestions questions={testQuestions} />
+            {!loading && (
+                <TestQuestions questions={testQuestions} />
+            )}
         </div>
     );
 };

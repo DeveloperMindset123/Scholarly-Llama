@@ -9,7 +9,9 @@ const QA_TEMPLATE = `You are a AI with immense knowledge on the given context wh
   {context}
 </context>
 
-Questions and Answers:`;
+Questions and Answers, with each question and answer being a different element of an array:
+`;
+
 
 export default async function handler(
   req: NextApiRequest, 
