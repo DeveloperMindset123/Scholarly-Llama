@@ -24,27 +24,18 @@ export default async function handler(req: any, res: any) {
 
     const loader = new CustomPDFLoader(data);
     const loadedPdf = await loader.load();
-    console.log(loadedPdf)
-    // the loaded process is different
 
-    // // Split text into chunks
-    const textSplitter = new RecursiveCharacterTextSplitter({
+    const characterTextSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 200,
     });
 
-    const docs = await textSplitter.splitDocuments(loadedPdf);
-    console.log('split docs', docs);
-    console.log('split docs', docs);
+    const splitDocs = await characterTextSplitter.splitDocuments(loadedPdf);
 
-    console.log('creating vector store...');
-    /*create and store the embeddings in the vectorStore*/
-    const embeddings = new OpenAIEmbeddings();
+    const openEmbeddings = new OpenAIEmbeddings();
+    const index = pinecone.Index(PINECONE_INDEX_NAME);
 
-    const index = pinecone.Index(PINECONE_INDEX_NAME); //change to your own index name
-
-    //embed the PDF documents
-    await PineconeStore.fromDocuments(docs, embeddings, {
+    await PineconeStore.fromDocuments(splitDocs, openEmbeddings, {
       pineconeIndex: index,
       namespace: PINECONE_NAME_SPACE,
       textKey: 'text',

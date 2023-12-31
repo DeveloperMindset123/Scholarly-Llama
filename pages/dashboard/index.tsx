@@ -176,24 +176,23 @@ export default function Page() {
         setBookNamespace(bookData[0].namespace);
         setActiveChat(bookData[0].namespace);
 
+      await supabase.from('messages').insert({
+        message: 'Please wait 5 seconds for model intiation.',
+        type: 'apiMessage',
+        book_namespace: bookData[0].namespace,
+      });
+
       setMessageState((state) => ({
         ...state,
         messages: [
           ...state.messages,
           {
             type: 'apiMessage',
-            message: 'What questions do you have?',
+            message: 'Please wait 5 seconds for model intiation.',
           },
         ],
         history: [...state.history],
-      }));
-
-      await supabase.from('messages').insert({
-        message: 'Please wait 5 seconds for model intiation',
-        type: 'apiMessage',
-        book_namespace: bookData[0].namespace,
-      });
-
+      }))
 
       setTimeout(() => {
         setLoading(false)
@@ -205,6 +204,18 @@ export default function Page() {
         type: 'apiMessage',
         book_namespace: bookData[0].namespace,
       });
+
+      setMessageState((state) => ({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
+            type: 'apiMessage',
+            message: 'What questions do you have?',
+          },
+        ],
+        history: [...state.history],
+      }));
 
 
       } catch (error) {
