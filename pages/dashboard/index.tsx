@@ -162,7 +162,7 @@ export default function Page() {
         }),
       });
 
-        const pdfProcessData = await pdfProcessResponse.json();
+      const pdfProcessData = await pdfProcessResponse.json();
 
 
         if (pdfProcessData.statusCode == '200') {
@@ -292,8 +292,9 @@ export default function Page() {
           api: process.env.NEXT_PUBLIC_API_KEY
         }),
       });
-      const data = await response.json();
-      console.log(data)
+      const initialData = await response.json();
+      const data = JSON.parse(initialData.body);
+
       if (data.error) {
         setError(data.error);
       } else {
