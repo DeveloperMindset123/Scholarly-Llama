@@ -1,10 +1,5 @@
 'use client';
-import {
-  useRef,
-  useState,
-  useEffect,
-  useLayoutEffect,
-} from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import styles from '@/styles/Home.module.css';
 import { Message } from '@/types/chat';
 import Image from 'next/image';
@@ -14,9 +9,11 @@ import { Document } from 'langchain/document';
 import { supabase } from '@/lib/initSupabase';
 import { useAuth } from '@/components/authProvider';
 import Layout, { useBooks } from '@/components/dashboard/layout';
+import { useRouter } from 'next/router';
 
 export default function Page() {
   const [pdf, setPdf] = useState<any>(null);
+  const router = useRouter();
   const [bookNamespace, setBookNamespace] = useState<string>('');
   const [ready, setReady] = useState<any>(false);
   const [text, setText] = useState<string>('Hi, upload your textbook!');
@@ -37,6 +34,10 @@ export default function Page() {
     ],
     history: [],
   });
+
+  useEffect(() => {
+    setActiveChat('');
+  }, [setActiveChat]);
 
   useEffect(() => {
     setActiveChat('');
@@ -135,134 +136,91 @@ export default function Page() {
           return;
         }
 
-
-        console.log('boutta call api')
-        const pdfProcessResponse = await fetch('/api/processPdf', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            bookNamespace: bookData[0].namespace,
-          }),
+        const { data: msgData, error: msgError } = await supabase
+        .from('messages')
+        .insert({
+          message: pdf.name,
+          type: 'userMessage',
+          book_namespace: bookData[0].namespace,
         });
 
-        const pdfProcessData = await pdfProcessResponse.json();
+      setBooks((state: any) => [bookData[0], ...state]);
 
-        const ingestResponse = await fetch('/api/ingestData', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docs: pdfProcessData.docs,
-          }),
-        });
+      await supabase.from('messages').insert({
+        message: 'Thank you! Let me process this.',
+        type: 'apiMessage',
+        book_namespace: bookData[0].namespace,
+      });
 
-        const ingestData = await ingestResponse.json();
+      
+      const pdfProcessResponse = await fetch('https://6og8a1e02b.execute-api.us-east-2.amazonaws.com/production/processPdfs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookNamespace: bookData[0].namespace,
+          api: process.env.NEXT_PUBLIC_API_KEY
+        }),
+      });
 
-        if (pdfProcessData && ingestData.success) {
+      const pdfProcessData = await pdfProcessResponse.json();
+
+
+        if (pdfProcessData.statusCode == '200') {
           setReady(true);
-          console.log('PDF uploaded and ingested successfully');
+          console.log('PDF uploaded successfully & Ingested');
         } else {
-          console.error('Ingestion failed:', ingestData.error);
+          setError(pdfProcessData.body);
           return;
         }
-
 
         setBookNamespace(bookData[0].namespace);
         setActiveChat(bookData[0].namespace);
 
-        const { data: msgData, error: msgError } = await supabase
-          .from('messages')
-          .insert({
-            message: pdf.name,
-            type: 'userMessage',
-            book_namespace: bookData[0].namespace,
-          });
+      await supabase.from('messages').insert({
+        message: 'Please wait 5 seconds for model intiation.',
+        type: 'apiMessage',
+        book_namespace: bookData[0].namespace,
+      });
 
-        setBooks((state: any) => [bookData[0], ...state]);
-
-        await supabase
-          .from('messages')
-          .insert({
-            message: 'Thank you! Let me process this.',
+      setMessageState((state) => ({
+        ...state,
+        messages: [
+          ...state.messages,
+          {
             type: 'apiMessage',
-            book_namespace: bookData[0].namespace,
-          });
+            message: 'Please wait 5 seconds for model intiation.',
+          },
+        ],
+        history: [...state.history],
+      }))
 
+      setTimeout(async() => {
+        setLoading(false)
+        await supabase.from('messages').insert({
+          message: 'What questions do you have?',
+          type: 'apiMessage',
+          book_namespace: bookData[0].namespace,
+        });
+  
         setMessageState((state) => ({
           ...state,
           messages: [
             ...state.messages,
             {
-              type: 'userMessage',
-              message: 'About the book, What should I know of the context?',
+              type: 'apiMessage',
+              message: 'What questions do you have?',
             },
           ],
+          history: [...state.history],
         }));
+  
+      },5000)
+ 
 
-        await supabase
-          .from('messages')
-          .insert({
-            message: 'About the book, What should I know of the context?',
-            type: 'userMessage',
-            book_namespace: bookData[0].namespace,
-          });
 
-        try {
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              question: 'About the book, What should I know of the context?',
-              history,
-              bookNamespace: bookData[0].namespace,
-            }),
-          });
-          const data = await response.json();
 
-          if (data.error) {
-            setError(data.error);
-          } else {
-            setMessageState((state) => ({
-              ...state,
-              messages: [
-                ...state.messages,
-                {
-                  type: 'apiMessage',
-                  message: data.text,
-                },
-              ],
-              history: [
-                ...state.history,
-                [
-                  'About the book, What should I know of the context?',
-                  data.text,
-                ],
-              ],
-            }));
-
-            await supabase
-              .from('messages')
-              .insert({
-                message: data.text,
-                type: 'apiMessage',
-                book_namespace: bookData[0].namespace,
-              });
-          }
-
-          setLoading(false);
-          //scroll to bottom
-        } catch (error) {
-          setLoading(false);
-          setError(
-            'An error occurred while fetching the data. Please try again.',
-          );
-          console.log('error', error);
-        }
       } catch (error) {
         setError('An error occurred while processing the file.');
         console.log('File Processing Error:', error);
@@ -314,19 +272,18 @@ export default function Page() {
       ],
     }));
 
-    await supabase
-      .from('messages')
-      .insert({
-        message: question,
-        type: 'userMessage',
-        book_namespace: bookNamespace,
-      });
+    await supabase.from('messages').insert({
+      message: question,
+      type: 'userMessage',
+      book_namespace: bookNamespace,
+    });
 
     setLoading(true);
     textAreaRef.current.value = '';
 
+          
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://6mzc75j4vc.execute-api.us-east-2.amazonaws.com/production/chat-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -335,9 +292,11 @@ export default function Page() {
           question,
           history,
           bookNamespace,
+          api: process.env.NEXT_PUBLIC_API_KEY
         }),
       });
-      const data = await response.json();
+      const initialData = await response.json();
+      const data = JSON.parse(initialData.body);
 
       if (data.error) {
         setError(data.error);
@@ -354,13 +313,11 @@ export default function Page() {
           history: [...state.history, [question, data.text]],
         }));
 
-        await supabase
-          .from('messages')
-          .insert({
-            message: data.text,
-            type: 'apiMessage',
-            book_namespace: bookNamespace,
-          });
+        await supabase.from('messages').insert({
+          message: data.text,
+          type: 'apiMessage',
+          book_namespace: bookNamespace,
+        });
       }
 
       setLoading(false);
@@ -435,7 +392,6 @@ export default function Page() {
                         </ReactMarkdown>
                       </div>
                     </div>
-                    
                   </>
                 );
               })}

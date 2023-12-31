@@ -66,10 +66,17 @@ export default function Page() {
         return;
       }
 
+      const updatedHistory: any = [];
+      for (let i = 0; i < data.length; i += 2) {
+        if (data[i] && data[i + 1]) {
+          updatedHistory.push([data[i].message, data[i + 1].message]);
+        }
+      }
+
       setMessageState((state) => ({
         ...state,
         messages: data,
-        history: [...state.history, data[data.length - 1].message],
+        history: updatedHistory,
       }));
 
       setLoading(false);
@@ -125,19 +132,17 @@ export default function Page() {
       ],
     }));
 
-    await supabase
-      .from('messages')
-      .insert({
-        message: question,
-        type: 'userMessage',
-        book_namespace: bookNamespace,
-      });
+    await supabase.from('messages').insert({
+      message: question,
+      type: 'userMessage',
+      book_namespace: bookNamespace,
+    });
 
     setLoading(true);
     textAreaRef.current.value = '';
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://6mzc75j4vc.execute-api.us-east-2.amazonaws.com/production/chat-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -146,9 +151,11 @@ export default function Page() {
           question,
           history,
           bookNamespace,
+          api: process.env.NEXT_PUBLIC_API_KEY
         }),
       });
-      const data = await response.json();
+      const initialData = await response.json();
+      const data = JSON.parse(initialData.body);
 
       if (data.error) {
         setError(data.error);
@@ -165,13 +172,11 @@ export default function Page() {
           history: [...state.history, [question, data.text]],
         }));
 
-        await supabase
-          .from('messages')
-          .insert({
-            message: data.text,
-            type: 'apiMessage',
-            book_namespace: bookNamespace,
-          });
+        await supabase.from('messages').insert({
+          message: data.text,
+          type: 'apiMessage',
+          book_namespace: bookNamespace,
+        });
       }
 
       setLoading(false);
@@ -246,7 +251,6 @@ export default function Page() {
                         </ReactMarkdown>
                       </div>
                     </div>
-                    
                   </>
                 );
               })}
@@ -307,5 +311,3 @@ export default function Page() {
 Page.getLayout = function getLayout(page: any) {
   return <Layout>{page}</Layout>;
 };
-
-

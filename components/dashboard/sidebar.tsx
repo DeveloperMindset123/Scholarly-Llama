@@ -9,7 +9,7 @@ function Element({ book, props }: any) {
   return (
     <Link href={`/dashboard/${book.namespace}`}>
       <div
-        className={`${props} hover:bg-gray-200 dark:hover:bg-gray-900 hover:z-10 hover:relative dark:text-white  transition-all ease-in-out rounded-lg p-[0.35rem] cursor-pointer`}
+        className={`${props} hover:bg-gray-200 dark:hover:bg-gray-900 hover:z-10 hover:relative dark:text-white  transition-all ease-in-out rounded-lg ml-[0.15rem] p-[0.35rem] cursor-pointer`}
       >
         {book.title}
       </div>
