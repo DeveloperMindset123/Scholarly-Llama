@@ -194,28 +194,29 @@ export default function Page() {
         history: [...state.history],
       }))
 
-      setTimeout(() => {
+      setTimeout(async() => {
         setLoading(false)
+        await supabase.from('messages').insert({
+          message: 'What questions do you have?',
+          type: 'apiMessage',
+          book_namespace: bookData[0].namespace,
+        });
+  
+        setMessageState((state) => ({
+          ...state,
+          messages: [
+            ...state.messages,
+            {
+              type: 'apiMessage',
+              message: 'What questions do you have?',
+            },
+          ],
+          history: [...state.history],
+        }));
+  
       },5000)
  
 
-      await supabase.from('messages').insert({
-        message: 'What questions do you have?',
-        type: 'apiMessage',
-        book_namespace: bookData[0].namespace,
-      });
-
-      setMessageState((state) => ({
-        ...state,
-        messages: [
-          ...state.messages,
-          {
-            type: 'apiMessage',
-            message: 'What questions do you have?',
-          },
-        ],
-        history: [...state.history],
-      }));
 
 
       } catch (error) {
