@@ -151,16 +151,16 @@ export default function Page() {
       });
 
       
-        const pdfProcessResponse = await fetch('https://6og8a1e02b.execute-api.us-east-2.amazonaws.com/production/processPdfs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            bookNamespace: bookData[0].namespace,
-            api: process.env.NEXT_PUBLIC_API_KEY
-          }),
-        });
+      const pdfProcessResponse = await fetch('https://6og8a1e02b.execute-api.us-east-2.amazonaws.com/production/processPdfs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookNamespace: bookData[0].namespace,
+          api: process.env.NEXT_PUBLIC_API_KEY
+        }),
+      });
 
         const pdfProcessData = await pdfProcessResponse.json();
 
@@ -278,8 +278,9 @@ export default function Page() {
     setLoading(true);
     textAreaRef.current.value = '';
 
+          
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://6mzc75j4vc.execute-api.us-east-2.amazonaws.com/production/chat-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -288,10 +289,11 @@ export default function Page() {
           question,
           history,
           bookNamespace,
+          api: process.env.NEXT_PUBLIC_API_KEY
         }),
       });
       const data = await response.json();
-
+      console.log(data)
       if (data.error) {
         setError(data.error);
       } else {
