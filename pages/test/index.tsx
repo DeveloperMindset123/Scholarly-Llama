@@ -10,7 +10,7 @@ const TestPage: React.FC = () => {
     // This should be the namespace of the book for which you want to generate questions
     //const bookNamespace = "1dfc6beb-9437-4280-ae97-c3a182acb4fd";
 
-    const tableName = 'books';
+    //const tableName = 'books';
     //fetch data from the table
     async function fetchData() {  //.from(bucketName).list(folderNameWithinBucket) alongside added parameters
         const {data, error} = await supabase.storage.from('pdfs').list('public', {
@@ -23,8 +23,7 @@ const TestPage: React.FC = () => {
             return;
         }
         console.log('Fetched Data: ', data);  //output the object itself
-        return data[4].name.replace('.pdf', '');  //remove the .pdf extension
-
+        return data[0].name.replace('.pdf', '');  //remove the .pdf extension
     }
 
 
@@ -44,13 +43,16 @@ const TestPage: React.FC = () => {
                     throw new Error('Failed to fetch test questions');
                 }   
 
-                const data1 = await response.json();
+                const data = await response.json();
                 //console.log("Supabase Data: ", data);
-                console.log()
-                console.log(data1.questions)
-                console.log(data1.questions.kwargs.content)
-                console.log(data1.questions.kwargs.content.trim().split(/(\d+\.)/))
-                setTestQuestions(data1.questions.kwargs.content.trim().split(/(\d+\.)/));
+                console.log("Raw Data: ", data);
+                const questionsArray = data.text.split('\n\n'); //adjust delimited if neccessary (note: try the kwargs.content.trim().split...) appraoch if this doesn't look right
+                console.log("Structured Data: ", questionsArray);  //print out the structured data to see the difference
+
+                //console.log(data.questions)
+                //console.log(data.questions.kwargs.content)
+                //console.log(data.questions.kwargs.content.trim().split(/(\d+\.)/))
+                setTestQuestions(questionsArray); //convert the test question into an appropariate array as needed
             } catch (error) {
                 console.error("Error fetching questions:", error);
             } finally {
@@ -82,7 +84,6 @@ const TestPage: React.FC = () => {
 
     return (
         <div>
-            <h1>Test Page</h1>
             {!loading && (
                 <TestQuestions questions={testQuestions} />
             )}

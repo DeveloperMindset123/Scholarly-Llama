@@ -17,7 +17,7 @@ const CONDENSE_TEMPLATE = `Given the following conversation and a follow up ques
 Follow Up Input: {question}
 Standalone question:`;
 
-const QA_TEMPLATE = `You are a AI with immense knowledge on the given context which is a book. Use the following pieces of context from the book to generate 20 multiple choice questions alongside a list that will contain all the correct answers for each of the questions.
+const QA_TEMPLATE = `You are a AI with immense knowledge on the given context which is a book. Use the following pieces of context from the book to generate 5 multiple choice questions alongside a list that will contain all the correct answers for each of the questions.
 
 <context>
   {context}
@@ -27,7 +27,7 @@ Question: {question}
 
 Questions and Answers:
 
-Helpful questions and answers in markdown, and readable format:`;
+Helpful questions and answers in markdown, and readable format:`;  //adjust the number of questions as needed, since generating more questions takes longer time, I kept it to 5 questions for now
 
 const combineDocumentsFn = (docs: Document[], separator = '\n\n') => {
     const serializedDocs = docs.map((doc) => doc.pageContent);
