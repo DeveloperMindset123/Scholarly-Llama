@@ -47,6 +47,10 @@ const TestPage: React.FC = () => {
                 //console.log("Supabase Data: ", data);
                 console.log("Raw Data: ", data);
                 const questionsArray = data.text.split('\n\n'); //adjust delimited if neccessary (note: try the kwargs.content.trim().split...) appraoch if this doesn't look right
+                
+                if (questionsArray[0].includes('context from the book')) {
+                    return;  //this conditional statement will ensure that the error regarding asking for the context of the book (in the sense that it asks the user that it doesn't have the context and then few seconds later it sends the context will be taken cared of)
+                } 
                 console.log("Structured Data: ", questionsArray);  //print out the structured data to see the difference
 
                 //console.log(data.questions)
@@ -79,7 +83,7 @@ const TestPage: React.FC = () => {
     }, []);
 
     if (loading) {
-        return <div>Loading questions...</div>;
+        return <div>Loading questions...(Please be patient as this process may take 1-2 minutes)</div>;
     }
 
     return (

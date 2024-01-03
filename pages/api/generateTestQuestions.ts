@@ -17,7 +17,7 @@ const CONDENSE_TEMPLATE = `Given the following conversation and a follow up ques
 Follow Up Input: {question}
 Standalone question:`;
 
-const QA_TEMPLATE = `You are a AI with immense knowledge on the given context which is a book. Use the following pieces of context from the book to generate 5 multiple choice questions alongside a list that will contain all the correct answers for each of the questions.
+const QA_TEMPLATE = `You are a AI with immense knowledge on the given context which is a book. Use the following pieces of context from the book to generate 20 multiple choice questions alongside a list that will contain all the correct answers for each of the questions.
 
 <context>
   {context}

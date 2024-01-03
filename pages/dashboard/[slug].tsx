@@ -200,6 +200,7 @@ export default function Page() {
 
   return (
     <>
+    
       <div className="mx-auto flex flex-col gap-4 ">
         <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
           Chat With Your Textbooks
@@ -303,6 +304,7 @@ export default function Page() {
             </div>
           )}
         </main>
+        
       </div>
     </>
   );

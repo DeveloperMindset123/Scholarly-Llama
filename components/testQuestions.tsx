@@ -20,14 +20,14 @@ export const TestQuestions: React.FC<TestQuestionsProps> = ({ questions }) => {
     // Function to handle answer selection
     const handleAnswerSelection = (questionIndex: number, choice: string) => {
         const { answer } = parseQuestion(questions[questionIndex]);
-        const isCorrect = choice === answer;
+        const isCorrect = choice.trim() === answer.trim();  //note that the .trim() function is neccessary because the white space was making it wrong
 
         setSelectedAnswers(new Map(selectedAnswers.set(questionIndex, choice)));
         setFeedbackMessages(new Map(feedbackMessages.set(questionIndex, isCorrect ? 'Correct!' : 'Incorrect, try again.')));
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen overflow-scroll px-2"> {/**Requires adjustment */}
+        <div className="flex flex-col items-center justify-center h-screen p-6 pt-[30%] overflow-y-scroll px-2"> {/*adding p-6 pt-[40%] overflow-y-scroll px-2 fixed the issue regards to scrolling*/}
             <h2 className="text-xl font-bold mb-4">Test Questions</h2>
             <ol className="space-y-4">
                 {questions.map((questionText, index) => {
