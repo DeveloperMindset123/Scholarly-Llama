@@ -27,15 +27,15 @@ export const TestQuestions: React.FC<TestQuestionsProps> = ({ questions }) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen p-6 pt-[30%] overflow-y-scroll px-2"> {/*adding p-6 pt-[40%] overflow-y-scroll px-2 fixed the issue regards to scrolling*/}
-            <h2 className="text-xl font-bold mb-4">Test Questions</h2>
-            <ol className="space-y-4">
-                {questions.map((questionText, index) => {
+        <div className="flex flex-col gap-4  items-center  w-full p-6 px-2"> {/*adding p-6 pt-[40%] overflow-y-scroll px-2 fixed the issue regards to scrolling*/}
+            <h2 className="text-xl font-medium mb-4">Test Questions</h2>
+            <div className='flex flex-col gap-4 mb-20 h-auto w-full p-6 overflow-y-scroll px-2'>
+            {questions.map((questionText, index) => {
                     const { question, choices } = parseQuestion(questionText);
                     return (
-                        <li key={index} className="bg-white p-4 rounded shadow-md w-full max-w-lg">
-                            <p className="px-1 py-2 font-semibold mb-2">{question}</p>
-                            <form className="flex flex-col space-y-2">
+                        <li key={index} className="bg-white p-4 rounded shadow-md  w-full ">
+                            <p className="px-1 py-2font-semibold mb-2">{question}</p>
+                            <form className="flex flex-col gap-2">
                                 {choices.map((choice, choiceIndex) => (
                                     <label key={choiceIndex} className="flex items-center space-x-3">
                                         <input
@@ -58,7 +58,7 @@ export const TestQuestions: React.FC<TestQuestionsProps> = ({ questions }) => {
                         </li>
                     );
                 })}
-            </ol>
+            </div>
         </div>
     );
 };
