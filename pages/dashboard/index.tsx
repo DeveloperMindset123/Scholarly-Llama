@@ -35,6 +35,9 @@ export default function Page() {
     history: [],
   });
 
+  useEffect(() => {
+    setActiveChat('');
+  }, [setActiveChat]);
 
   useEffect(() => {
     setActiveChat('');
@@ -108,7 +111,6 @@ export default function Page() {
           }));
         }, 2000);
 
-
         const { data: bookData, error: bookError } = await supabase
           .from('books')
           .insert([{ title: pdf.name, user_id: user.id }])
@@ -124,7 +126,7 @@ export default function Page() {
           .upload(`public/${bookData[0].namespace}.pdf`, pdf, {
             contentType: 'application/pdf',
           });
-
+          //if error upload occurs, delete the uploaded pdf from the database itself
         if (error) {
           const { data: deleteData, error: deleteError } = await supabase
             .from('books')
@@ -495,10 +497,12 @@ export default function Page() {
           </div>
           {error && (
             <div className="border border-red-400 rounded-md p-4">
+              
               <p className="text-red-500">{error}</p>
             </div>
           )}
         </main>
+        
       </div>
     </>
   );

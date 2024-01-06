@@ -59,3 +59,10 @@ async function PDFLoaderImports() {
     );
   }
 }
+
+
+/**Comments from Ayan (I am just gonna add some notes at the bottom here to beteter understand what's going on)
+ * 
+ * This file defines a class CustomPDFLoader that extends the BufferLoader from langchain. It's designed to load a PDF document from either a file path or a Blob object, and parse it into a 'Document' object that can be used by the langchain library
+ * 
+ */

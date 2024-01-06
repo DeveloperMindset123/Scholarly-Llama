@@ -8,6 +8,7 @@ import LoadingDots from '@/components/ui/LoadingDots';
 import { Document } from 'langchain/document';
 import { supabase } from '@/lib/initSupabase';
 import Layout, { useBooks } from '@/components/dashboard/layout';
+import { Button } from '@/components/ui/button';
 
 export default function Page() {
   const [bookNamespace, setBookNamespace] = useState<string>('');
@@ -200,6 +201,7 @@ export default function Page() {
 
   return (
     <>
+    
       <div className="mx-auto flex flex-col gap-4 ">
         <h1 className="text-2xl font-bold leading-[1.1] tracking-tighter text-center">
           Chat With Your Textbooks
@@ -302,7 +304,9 @@ export default function Page() {
               <p className="text-red-500">{error}</p>
             </div>
           )}
+
         </main>
+        
       </div>
     </>
   );

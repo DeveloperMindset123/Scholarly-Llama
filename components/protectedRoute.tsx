@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children }: any) {
       </div>
     );
   } else {
-    if (!isAuthenticated && router.pathname.includes('/dashboard')) {
+    if (!isAuthenticated && (router.pathname.includes('/dashboard'))) {
       router.push('/404');
     } else {
       return children;
