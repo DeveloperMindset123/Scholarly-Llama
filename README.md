@@ -22,3 +22,7 @@ Scope of this project: Scholarly Llama is a project developed with the goal of p
 ![transfer](https://github.com/DeveloperMindset123/Scholarly-Llama/assets/39009375/dd449ad0-fb2d-4a67-a921-35b4dd7d8df1)
 
 ![chats](https://github.com/DeveloperMindset123/Scholarly-Llama/assets/39009375/cfa8fca2-5f77-43f7-b201-df1bfa8fbfca)
+
+![TestDemo1](https://media.giphy.com/media/gzjSeaSEGVloRfQThB/giphy.gif)
+
+![TestDemo2](https://media.giphy.com/media/7Zv7kntiD07e6WaAeM/giphy.gif)
