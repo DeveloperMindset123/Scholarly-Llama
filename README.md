@@ -1,7 +1,23 @@
 # Live: https://scholarly-llama.vercel.app
 # Scholarly Llama: Accessible Education with LLMS
 
-Scope of this project: Scholarly Llama is a project developed with the goal of providing accessible education using Large Language Modeling System (LLMS). This is done by allowing users to upload textbooks or books and then creating and serving models out of them. These models are able to be used without any friction, users can even leave and come back on another device and be assured that their previous chat history will be there.
+Scholarly Llama is a project developed with the goal of providing accessible education using Large Language Modeling System (LLMS). This is done by allowing users to upload textbooks or books and then creating and serving models out of them. These models are able to be used without any friction, users can even leave and come back on another device and be assured that their previous chat history will be there.
+
+### Technology Stack:
+
+- **Frontend:**
+  - React/Next
+  - Tailwind
+- **Backend:**
+  - Supabase
+  - Next API Routes
+  - Pinecone
+  - Langchain
+  - OpenAI Embeddings
+- **Additional Tools:**
+  - AWS Lambda Functions
+  - AWS API Gateway
+  - Vercel
 
 ### Main Features
 
