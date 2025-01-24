@@ -39,6 +39,4 @@ Scholarly Llama is a project developed with the goal of providing accessible edu
 
 ![chats](https://github.com/DeveloperMindset123/Scholarly-Llama/assets/39009375/cfa8fca2-5f77-43f7-b201-df1bfa8fbfca)
 
-![TestDemo1](https://media.giphy.com/media/gzjSeaSEGVloRfQThB/giphy.gif)
 
-![TestDemo2](https://media.giphy.com/media/7Zv7kntiD07e6WaAeM/giphy.gif)
